@@ -1,0 +1,2311 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOGOS TÉLÉVISION — Votre plaisir | Likasi, RDC</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- HLS.js pour une diffusion en direct ultra-fluide (.m3u8) -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7"></script>
+    <!-- mpegts.js pour les flux IPTV / VLC (.ts, MPEG-TS, FLV) -->
+    <script src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        logos: {
+                            yellow: '#F4CA00',
+                            yellowHover: '#FFE047',
+                            blue: '#001E7A',
+                            blueLight: '#0A31A8',
+                            blueDark: '#00124D',
+                            darkBg: '#060D26',
+                            cardBg: '#0D1942'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #060D26;
+            color: #F8FAFC;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Animation fluide du bandeau Flash Info */
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-marquee {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 24s linear infinite;
+        }
+        .animate-marquee:hover {
+            animation-play-state: paused;
+        }
+
+        /* Barre de défilement personnalisée */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #060D26;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1E3A8A;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #F4CA00;
+        }
+
+        /* Conteneur vidéo responsive 16:9 */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            background: #000;
+        }
+        .video-wrapper iframe,
+        .video-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+
+        .glass-nav {
+            background: rgba(6, 13, 38, 0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-20 md:pb-6">
+
+    <!-- ==================== EN-TÊTE PRINCIPAL (HEADER) ==================== -->
+    <header class="sticky top-0 z-40 glass-nav border-b border-white/10 shadow-lg">
+        <div class="max-w-5xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
+            
+            <!-- Logo officiel LOGOS TÉLÉVISION + Slogan -->
+            <div onclick="switchTab('live')" class="flex items-center gap-3 cursor-pointer group">
+                <div id="header-logo-container" class="w-28 sm:w-32 flex-shrink-0 transition-transform duration-200 group-hover:scale-105 flex items-center"></div>
+                <div class="hidden sm:flex flex-col border-l border-white/15 pl-3">
+                    <span id="header-channel-name" class="text-xs font-extrabold tracking-wider text-logos-yellow uppercase">LOGOS TÉLÉVISION</span>
+                    <span id="header-slogan" class="text-xs italic text-slate-300 font-medium">« Votre plaisir »</span>
+                    <span class="text-[10px] text-blue-300 flex items-center gap-1 mt-0.5">
+                        <i class="fa-solid fa-location-dot text-logos-yellow"></i> Likasi, Haut-Katanga • RDC
+                    </span>
+                </div>
+            </div>
+
+            <!-- Navigation Desktop -->
+            <nav class="hidden md:flex items-center gap-1.5 bg-logos-cardBg/80 p-1 rounded-2xl border border-white/10">
+                <button type="button" onclick="switchTab('live')" id="desk-nav-live" class="desk-nav-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-logos-yellow text-logos-blue">
+                    <span class="w-2 h-2 rounded-full bg-red-600 animate-ping"></span> Direct TV
+                </button>
+                <button type="button" onclick="switchTab('news')" id="desk-nav-news" class="desk-nav-btn px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-newspaper"></i> Actualités
+                </button>
+                <button type="button" onclick="switchTab('contact')" id="desk-nav-contact" class="desk-nav-btn px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-address-book"></i> Contact & Réseaux
+                </button>
+            </nav>
+
+            <!-- Indicateur Admin & Bouton d'accès Régie -->
+            <div class="flex items-center gap-2">
+                <span id="admin-active-badge" class="hidden items-center gap-1.5 bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[11px] font-bold px-2.5 py-1 rounded-full">
+                    <i class="fa-solid fa-shield-halved"></i> Mode Admin
+                </span>
+
+                <button type="button" onclick="handleAdminAccess()" id="header-admin-btn" class="px-3.5 py-2 rounded-xl bg-logos-blueLight hover:bg-logos-blue border border-white/15 text-white text-xs font-bold flex items-center gap-2 transition shadow-md active:scale-95">
+                    <i id="admin-lock-icon" class="fa-solid fa-lock text-logos-yellow"></i>
+                    <span id="admin-btn-label">Espace Admin</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bandeau Flash Info Défilant -->
+        <div class="bg-logos-yellow text-logos-blue py-1 px-3 overflow-hidden flex items-center gap-2 border-t border-black/10">
+            <span class="bg-logos-blue text-logos-yellow text-[10px] font-black uppercase px-2 py-0.5 rounded flex-shrink-0 tracking-wider">
+                FLASH INFO
+            </span>
+            <div class="overflow-hidden flex-1">
+                <div id="live-ticker-text" class="animate-marquee text-xs font-bold tracking-tight">
+                    Bienvenue sur LOGOS TÉLÉVISION Likasi — Votre plaisir • Suivez nos éditions d'information en direct depuis le Haut-Katanga (RDC)...
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== CONTENU PRINCIPAL ==================== -->
+    <main class="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-4 pt-4 sm:pt-6 space-y-6">
+
+        <!-- ==================== 1. ONGLET DIRECT TV ==================== -->
+        <section id="view-live" class="tab-view space-y-5">
+            
+            <!-- Carte Lecteur TV en Direct -->
+            <div class="bg-logos-cardBg rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+                <div class="px-4 py-2.5 bg-gradient-to-r from-logos-blueDark via-logos-blue to-logos-blueDark flex flex-wrap items-center justify-between gap-2 border-b border-white/10">
+                    <div class="flex items-center gap-2.5">
+                        <span class="inline-flex items-center gap-1.5 bg-red-600 text-white text-[11px] font-black uppercase px-2.5 py-1 rounded-full shadow">
+                            <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span> EN DIRECT
+                        </span>
+                        <span class="text-xs sm:text-sm font-bold text-white" id="live-channel-subtitle">LOGOS TÉLÉVISION — Likasi</span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <select id="stream-quality-select" onchange="changeStreamQuality(this.value)" class="bg-black/40 border border-white/15 text-xs text-logos-yellow font-bold rounded-lg px-2.5 py-1 focus:outline-none">
+                            <option value="auto">Qualité : Auto (Fluide)</option>
+                            <option value="1080p">HD 1080p</option>
+                            <option value="720p">HD 720p</option>
+                            <option value="480p">Éco Data 480p</option>
+                        </select>
+                        <button type="button" onclick="reloadLiveStream()" title="Actualiser le flux direct" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs transition">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Zone Vidéo 16:9 -->
+                <div class="video-wrapper" id="live-player-container"></div>
+
+                <!-- Infos Programme en cours & Slogan -->
+                <div class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-b from-logos-cardBg to-logos-blueDark/60">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] font-extrabold uppercase tracking-wider text-logos-yellow">Diffusion en cours</span>
+                            <span class="text-slate-500">•</span>
+                            <span class="text-xs italic text-slate-300" id="live-slogan-badge">« Votre plaisir »</span>
+                        </div>
+                        <h1 id="live-program-title" class="text-base sm:text-lg font-extrabold text-white leading-snug">
+                            Journal Télévisé — Édition Spéciale Likasi
+                        </h1>
+                        <p id="live-program-desc" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                            Suivez toute l'actualité politique, économique, sociale et culturelle de Likasi et de la province du Haut-Katanga.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <button type="button" onclick="shareContent('Suivez LOGOS TÉLÉVISION Likasi en direct !')" class="px-4 py-2.5 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue font-extrabold text-xs flex items-center gap-2 transition shadow-md active:scale-95">
+                            <i class="fa-solid fa-share-nodes"></i> Partager le direct
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Barre rapide des logos Réseaux Sociaux cliquables -->
+                <div class="px-4 py-3 bg-logos-blueDark/90 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-globe text-logos-yellow"></i> Suivez-nous :
+                    </span>
+                    <div class="flex items-center gap-2.5">
+                        <a id="quick-social-youtube" href="#" target="_blank" rel="noopener noreferrer" title="YouTube LOGOS TÉLÉVISION" class="w-9 h-9 rounded-full bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30 flex items-center justify-center transition transform hover:scale-110">
+                            <i class="fa-brands fa-youtube text-base"></i>
+                        </a>
+                        <a id="quick-social-facebook" href="#" target="_blank" rel="noopener noreferrer" title="Facebook LOGOS TÉLÉVISION" class="w-9 h-9 rounded-full bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/30 flex items-center justify-center transition transform hover:scale-110">
+                            <i class="fa-brands fa-facebook-f text-base"></i>
+                        </a>
+                        <a id="quick-social-tiktok" href="#" target="_blank" rel="noopener noreferrer" title="TikTok LOGOS TÉLÉVISION" class="w-9 h-9 rounded-full bg-white/10 hover:bg-black text-white border border-white/20 flex items-center justify-center transition transform hover:scale-110">
+                            <i class="fa-brands fa-tiktok text-base"></i>
+                        </a>
+                        <a id="quick-social-x" href="#" target="_blank" rel="noopener noreferrer" title="Compte X LOGOS TÉLÉVISION" class="w-9 h-9 rounded-full bg-white/10 hover:bg-neutral-900 text-white border border-white/20 flex items-center justify-center transition transform hover:scale-110">
+                            <i class="fa-brands fa-x-twitter text-base"></i>
+                        </a>
+                        <a id="quick-social-instagram" href="#" target="_blank" rel="noopener noreferrer" title="Instagram LOGOS TÉLÉVISION" class="w-9 h-9 rounded-full bg-pink-600/20 hover:bg-gradient-to-tr hover:from-amber-500 hover:via-pink-600 hover:to-purple-600 text-pink-400 hover:text-white border border-pink-500/30 flex items-center justify-center transition transform hover:scale-110">
+                            <i class="fa-brands fa-instagram text-base"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Espace Bannières Publicitaires -->
+            <div class="bg-logos-cardBg rounded-2xl p-4 sm:p-5 border border-white/10 space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                    <h2 class="text-sm sm:text-base font-extrabold text-logos-yellow flex items-center gap-2">
+                        <i class="fa-solid fa-bullhorn"></i> Espace Publicitaire & Partenaires
+                    </h2>
+                    <div class="flex items-center gap-2">
+                        <button type="button" id="live-admin-ad-btn" onclick="openAdminAdModal()" class="hidden px-2.5 py-1 rounded-lg bg-logos-yellow text-logos-blue text-[11px] font-black items-center gap-1 shadow">
+                            <i class="fa-solid fa-plus"></i> Publier une pub
+                        </button>
+                        <button type="button" onclick="prevAdBanner()" title="Publicité précédente" class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs flex items-center justify-center">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button type="button" onclick="nextAdBanner()" title="Publicité suivante" class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs flex items-center justify-center">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Conteneur de la Bannière Publicitaire active -->
+                <div id="ad-banner-display" class="relative rounded-xl overflow-hidden border border-white/15 bg-logos-darkBg min-h-[140px] flex items-center justify-center"></div>
+
+                <!-- Indicateurs de pagination -->
+                <div id="ad-banner-dots" class="flex items-center justify-center gap-1.5 pt-1"></div>
+            </div>
+
+            <!-- Aperçu des dernières vidéos d'actualité -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-logos-yellow"></i> Dernières Vidéos d'Actualité
+                    </h2>
+                    <button type="button" onclick="switchTab('news')" class="text-xs font-bold text-logos-yellow hover:underline flex items-center gap-1">
+                        Voir toutes les vidéos <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+                <div id="live-preview-news-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5"></div>
+            </div>
+        </section>
+
+        <!-- ==================== 2. ONGLET ACTUALITÉS & CHAPEAUX ==================== -->
+        <section id="view-news" class="tab-view hidden space-y-5">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-logos-cardBg p-4 rounded-2xl border border-white/10">
+                <div>
+                    <h1 class="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-newspaper text-logos-yellow"></i> Actualités & Reportages Vidéo
+                    </h1>
+                    <p class="text-xs text-slate-300 mt-0.5">Retrouvez chaque reportage accompagné de son chapeau éditorial — Rédaction Likasi.</p>
+                </div>
+
+                <button type="button" id="news-admin-add-btn" onclick="openAdminVideoModal()" class="hidden px-4 py-2.5 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue font-extrabold text-xs items-center gap-2 shadow-lg transition self-start sm:self-auto">
+                    <i class="fa-solid fa-plus-circle"></i> Ajouter une vidéo
+                </button>
+            </div>
+
+            <!-- Barre de recherche & Filtres -->
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="news-search-input" oninput="renderNewsList()" placeholder="Rechercher une actualité, un sujet à Likasi..." class="w-full bg-logos-cardBg border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none focus:border-logos-yellow">
+                </div>
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1">
+                    <button type="button" onclick="setNewsCategory('Toutes')" class="cat-pill active px-3.5 py-2 rounded-xl text-xs font-bold bg-logos-yellow text-logos-blue whitespace-nowrap">Toutes</button>
+                    <button type="button" onclick="setNewsCategory('Likasi Info')" class="cat-pill px-3.5 py-2 rounded-xl text-xs font-semibold bg-logos-cardBg text-slate-300 border border-white/10 whitespace-nowrap">Likasi Info</button>
+                    <button type="button" onclick="setNewsCategory('Politique')" class="cat-pill px-3.5 py-2 rounded-xl text-xs font-semibold bg-logos-cardBg text-slate-300 border border-white/10 whitespace-nowrap">Politique</button>
+                    <button type="button" onclick="setNewsCategory('Sport')" class="cat-pill px-3.5 py-2 rounded-xl text-xs font-semibold bg-logos-cardBg text-slate-300 border border-white/10 whitespace-nowrap">Sport</button>
+                    <button type="button" onclick="setNewsCategory('Culture')" class="cat-pill px-3.5 py-2 rounded-xl text-xs font-semibold bg-logos-cardBg text-slate-300 border border-white/10 whitespace-nowrap">Culture</button>
+                </div>
+            </div>
+
+            <!-- Grille des Vidéos d'Actualité avec leur Chapeau -->
+            <div id="news-grid-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </section>
+
+        <!-- ==================== 3. ONGLET CONTACT & RÉSEAUX SOCIAUX ==================== -->
+        <section id="view-contact" class="tab-view hidden space-y-5">
+            
+            <!-- Bannière Identité Chaîne -->
+            <div class="bg-gradient-to-br from-logos-blue via-logos-blueDark to-logos-cardBg rounded-2xl p-6 border border-white/15 shadow-xl flex flex-col sm:flex-row items-center gap-6">
+                <div id="contact-logo-container" class="w-40 flex-shrink-0"></div>
+                <div class="text-center sm:text-left space-y-2">
+                    <span class="inline-block bg-logos-yellow text-logos-blue text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
+                        Chaîne de Télévision Officielle
+                    </span>
+                    <h1 id="contact-channel-title" class="text-2xl font-black text-white tracking-tight">LOGOS TÉLÉVISION</h1>
+                    <p id="contact-slogan-text" class="text-sm italic font-semibold text-logos-yellow">« Votre plaisir »</p>
+                    <p id="contact-address-text" class="text-xs sm:text-sm text-blue-100 flex items-center justify-center sm:justify-start gap-2 pt-1">
+                        <i class="fa-solid fa-location-dot text-logos-yellow"></i>
+                        Likasi, Province du Haut-Katanga, République Démocratique du Congo
+                    </p>
+                </div>
+            </div>
+
+            <!-- Coordonnées Téléphoniques & WhatsApp -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-logos-cardBg p-5 rounded-2xl border border-white/10 flex items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <span class="text-[11px] font-bold uppercase text-logos-yellow">Ligne Directe / Rédaction</span>
+                        <p id="contact-phone-display" class="text-base sm:text-lg font-extrabold text-white">+243 970 000 000</p>
+                        <p class="text-xs text-slate-400">Disponible 24h/24 à Likasi</p>
+                    </div>
+                    <a id="contact-phone-link" href="tel:+243970000000" class="w-12 h-12 rounded-2xl bg-logos-yellow text-logos-blue flex items-center justify-center text-lg shadow-lg hover:scale-105 transition flex-shrink-0">
+                        <i class="fa-solid fa-phone"></i>
+                    </a>
+                </div>
+
+                <div class="bg-logos-cardBg p-5 rounded-2xl border border-white/10 flex items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <span class="text-[11px] font-bold uppercase text-emerald-400">WhatsApp Téléspectateurs</span>
+                        <p class="text-base sm:text-lg font-extrabold text-white">Envoyer une info / alerte</p>
+                        <p class="text-xs text-slate-400">Réagissez en direct aux émissions</p>
+                    </div>
+                    <a id="contact-whatsapp-link" href="https://wa.me/243970000000" target="_blank" rel="noopener noreferrer" class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-2xl shadow-lg hover:scale-105 transition flex-shrink-0">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Réseaux Sociaux Officiels (Logos cliquables directs) -->
+            <div class="bg-logos-cardBg p-5 rounded-2xl border border-white/10 space-y-4">
+                <div>
+                    <h2 class="text-base font-extrabold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-share-nodes text-logos-yellow"></i> Nos Réseaux Sociaux Officiels
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Cliquez directement sur un logo pour accéder à notre page officielle.</p>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    <!-- YouTube -->
+                    <a id="social-link-youtube" href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="group bg-red-600/15 hover:bg-red-600 border border-red-500/30 rounded-2xl p-4 flex flex-col items-center justify-center gap-2.5 transition transform hover:-translate-y-1">
+                        <div class="w-12 h-12 rounded-2xl bg-red-600 group-hover:bg-white text-white group-hover:text-red-600 flex items-center justify-center text-2xl shadow-lg transition">
+                            <i class="fa-brands fa-youtube"></i>
+                        </div>
+                        <span class="text-xs font-extrabold text-white">YouTube</span>
+                    </a>
+
+                    <!-- Facebook -->
+                    <a id="social-link-facebook" href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="group bg-blue-600/15 hover:bg-blue-600 border border-blue-500/30 rounded-2xl p-4 flex flex-col items-center justify-center gap-2.5 transition transform hover:-translate-y-1">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-600 group-hover:bg-white text-white group-hover:text-blue-600 flex items-center justify-center text-2xl shadow-lg transition">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </div>
+                        <span class="text-xs font-extrabold text-white">Facebook</span>
+                    </a>
+
+                    <!-- TikTok -->
+                    <a id="social-link-tiktok" href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="group bg-white/5 hover:bg-black border border-white/15 rounded-2xl p-4 flex flex-col items-center justify-center gap-2.5 transition transform hover:-translate-y-1">
+                        <div class="w-12 h-12 rounded-2xl bg-black group-hover:bg-white text-white group-hover:text-black border border-white/20 flex items-center justify-center text-2xl shadow-lg transition">
+                            <i class="fa-brands fa-tiktok"></i>
+                        </div>
+                        <span class="text-xs font-extrabold text-white">TikTok</span>
+                    </a>
+
+                    <!-- Compte X -->
+                    <a id="social-link-x" href="https://x.com" target="_blank" rel="noopener noreferrer" class="group bg-white/5 hover:bg-neutral-900 border border-white/15 rounded-2xl p-4 flex flex-col items-center justify-center gap-2.5 transition transform hover:-translate-y-1">
+                        <div class="w-12 h-12 rounded-2xl bg-neutral-900 group-hover:bg-white text-white group-hover:text-black border border-white/20 flex items-center justify-center text-2xl shadow-lg transition">
+                            <i class="fa-brands fa-x-twitter"></i>
+                        </div>
+                        <span class="text-xs font-extrabold text-white">Compte X</span>
+                    </a>
+
+                    <!-- Instagram -->
+                    <a id="social-link-instagram" href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="col-span-2 sm:col-span-1 group bg-pink-600/15 hover:bg-gradient-to-tr hover:from-amber-500 hover:via-pink-600 hover:to-purple-600 border border-pink-500/30 rounded-2xl p-4 flex flex-col items-center justify-center gap-2.5 transition transform hover:-translate-y-1">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 via-pink-600 to-purple-600 group-hover:bg-none group-hover:bg-white text-white group-hover:text-pink-600 flex items-center justify-center text-2xl shadow-lg transition">
+                            <i class="fa-brands fa-instagram"></i>
+                        </div>
+                        <span class="text-xs font-extrabold text-white">Instagram</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 4. ONGLET ADMINISTRATION (RÉGIE TV) ==================== -->
+        <section id="view-admin" class="tab-view hidden space-y-5">
+            
+            <div class="bg-gradient-to-r from-logos-blue to-logos-blueDark p-5 rounded-2xl border border-logos-yellow/40 flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <span class="text-[10px] font-black uppercase tracking-widest bg-logos-yellow text-logos-blue px-2.5 py-0.5 rounded">Accès Réservé Administrateur</span>
+                    <h1 class="text-lg sm:text-xl font-extrabold text-white mt-1">Régie & Paramètres LOGOS TÉLÉVISION</h1>
+                    <p class="text-xs text-blue-200">Modifiez le logo, le flux en direct, les bannières publicitaires, les vidéos et les contacts.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="exportConfigJson()" class="px-4 py-2 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue text-xs font-black flex items-center gap-2 transition shadow">
+                        <i class="fa-solid fa-download"></i> Exporter config.json
+                    </button>
+                    <button type="button" onclick="logoutAdmin()" class="px-4 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-200 text-xs font-bold flex items-center gap-2 transition">
+                        <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sous-onglets Administration -->
+            <div class="flex gap-2 overflow-x-auto pb-1">
+                <button type="button" onclick="switchAdminSubTab('stream')" id="subtab-btn-stream" class="admin-sub-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-logos-yellow text-logos-blue whitespace-nowrap">
+                    <i class="fa-solid fa-tower-broadcast mr-1.5"></i> Direct & Logo
+                </button>
+                <button type="button" onclick="switchAdminSubTab('ads')" id="subtab-btn-ads" class="admin-sub-btn px-4 py-2.5 rounded-xl text-xs font-semibold bg-logos-cardBg text-slate-300 border border-white/10 whitespace-nowrap">
+                    <i class="fa-solid fa-rectangle-ad mr-1.5"></i> Bannières Pub
+                </button>
+                <button type="button" onclick="switchAdminSubTab('videos')" id="subtab-btn-videos" class="admin-sub-btn px-4 py-2.5 rounded-xl text-xs font-semibold bg-logos-cardBg text-slate-300 border border-white/10 whitespace-nowrap">
+                    <i class="fa-solid fa-film mr-1.5"></i> Vidéos & Chapeaux
+                </button>
+                <button type="button" onclick="switchAdminSubTab('socials')" id="subtab-btn-socials" class="admin-sub-btn px-4 py-2.5 rounded-xl text-xs font-semibold bg-logos-cardBg text-slate-300 border border-white/10 whitespace-nowrap">
+                    <i class="fa-solid fa-address-card mr-1.5"></i> Contacts & Réseaux
+                </button>
+                <button type="button" onclick="switchAdminSubTab('security')" id="subtab-btn-security" class="admin-sub-btn px-4 py-2.5 rounded-xl text-xs font-semibold bg-logos-cardBg text-slate-300 border border-white/10 whitespace-nowrap">
+                    <i class="fa-solid fa-key mr-1.5"></i> Sécurité PIN
+                </button>
+            </div>
+
+            <!-- 1. PARAMÈTRES DIRECT TV, IDENTITÉ & LOGO -->
+            <form id="admin-stream-form" onsubmit="saveStreamSettings(event)" class="admin-sub-panel bg-logos-cardBg p-5 rounded-2xl border border-white/10 space-y-4">
+                <h3 class="text-base font-extrabold text-logos-yellow flex items-center gap-2">
+                    <i class="fa-solid fa-sliders"></i> Paramètres du Direct TV & Logo de la Chaîne
+                </h3>
+
+                <!-- Modification du Logo -->
+                <div class="bg-logos-darkBg/80 p-4 rounded-xl border border-white/10 space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <label class="block text-xs font-extrabold text-logos-yellow">Logo de la chaîne LOGOS TÉLÉVISION</label>
+                            <p class="text-[11px] text-slate-400">Importez une image depuis votre appareil ou indiquez un lien URL.</p>
+                        </div>
+                        <div id="admin-logo-preview" class="w-28 bg-black/40 p-2 rounded-lg border border-white/10 flex items-center justify-center"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Lien URL de l'image du logo</label>
+                            <input type="text" id="cfg-logo-url" placeholder="Laisser vide pour le logo d'origine" class="w-full bg-logos-cardBg border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:border-logos-yellow focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Ou importer un fichier image (PNG, JPG)</label>
+                            <input type="file" accept="image/*" onchange="handleLogoFileUpload(event)" class="w-full text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-logos-yellow file:text-logos-blue cursor-pointer">
+                        </div>
+                    </div>
+                    <button type="button" onclick="resetDefaultLogo()" class="text-[11px] text-blue-300 hover:underline font-semibold">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> Restaurer le logo SVG original
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Nom de la chaîne</label>
+                        <input type="text" id="cfg-channel-name" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Slogan officiel</label>
+                        <input type="text" id="cfg-slogan" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">
+                        URL du Flux TV en Direct (VLC / IPTV .m3u8, .ts, .m3u, YouTube Live ou MP4)
+                    </label>
+                    <input type="text" id="cfg-stream-url" required placeholder="Ex: http://serveur-iptv:8080/live/chaine.m3u8 ou .ts" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    <p class="text-[11px] text-slate-400 mt-1">
+                        <i class="fa-solid fa-circle-info text-logos-yellow mr-1"></i>
+                        Compatible avec les liens de diffusion VLC / IPTV (<code class="text-logos-yellow">.m3u8</code>, flux <code class="text-logos-yellow">.ts</code>, playlists <code class="text-logos-yellow">.m3u</code>, YouTube Live et MP4).
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Titre de l'émission en cours</label>
+                        <input type="text" id="cfg-program-title" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Description courte du programme</label>
+                        <input type="text" id="cfg-program-desc" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">Bandeau défilant (Flash Info Ticker)</label>
+                    <textarea id="cfg-ticker" rows="2" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end">
+                    <button type="submit" class="px-6 py-3 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue font-black text-xs uppercase tracking-wider shadow-lg transition active:scale-95">
+                        <i class="fa-solid fa-floppy-disk mr-1.5"></i> Enregistrer le Direct & Logo
+                    </button>
+                </div>
+            </form>
+
+            <!-- 2. GESTION DES BANNIÈRES PUBLICITAIRES (ADMIN) -->
+            <div id="admin-ads-panel" class="admin-sub-panel hidden space-y-4">
+                <div class="bg-logos-cardBg p-5 rounded-2xl border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-base font-extrabold text-logos-yellow">Gestion des Bannières Publicitaires</h3>
+                        <p class="text-xs text-slate-400">Publiez ou modifiez les affiches publicitaires diffusées sous le lecteur en direct.</p>
+                    </div>
+                    <button type="button" onclick="openAdminAdModal()" class="px-4 py-2.5 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue font-extrabold text-xs flex items-center gap-2 shadow">
+                        <i class="fa-solid fa-plus"></i> Nouvelle Bannière Pub
+                    </button>
+                </div>
+
+                <div id="admin-ads-list" class="space-y-3"></div>
+            </div>
+
+            <!-- 3. GESTION DES VIDÉOS D'ACTUALITÉ & CHAPEAUX -->
+            <div id="admin-videos-panel" class="admin-sub-panel hidden space-y-4">
+                <div class="bg-logos-cardBg p-5 rounded-2xl border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-base font-extrabold text-logos-yellow">Gestion des Vidéos d'Actualité</h3>
+                        <p class="text-xs text-slate-400">Ajoutez, modifiez ou supprimez les reportages et leur chapeau éditorial.</p>
+                    </div>
+                    <button type="button" onclick="openAdminVideoModal()" class="px-4 py-2.5 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue font-extrabold text-xs flex items-center gap-2 shadow">
+                        <i class="fa-solid fa-plus"></i> Nouvelle Vidéo
+                    </button>
+                </div>
+
+                <div id="admin-videos-list" class="space-y-3"></div>
+            </div>
+
+            <!-- 4. GESTION CONTACTS & RÉSEAUX SOCIAUX -->
+            <form id="admin-socials-form" onsubmit="saveContactSettings(event)" class="admin-sub-panel hidden bg-logos-cardBg p-5 rounded-2xl border border-white/10 space-y-4">
+                <h3 class="text-base font-extrabold text-logos-yellow flex items-center gap-2">
+                    <i class="fa-solid fa-share-nodes"></i> Coordonnées & Liens Réseaux Sociaux
+                </h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Numéro de téléphone (avec indicatif +243)</label>
+                        <input type="text" id="cfg-phone" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Adresse / Siège de la chaîne</label>
+                        <input type="text" id="cfg-address" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5"><i class="fa-brands fa-youtube text-red-500 mr-1"></i> Lien Chaîne YouTube</label>
+                        <input type="text" id="cfg-youtube" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5"><i class="fa-brands fa-facebook text-blue-500 mr-1"></i> Lien Page Facebook</label>
+                        <input type="text" id="cfg-facebook" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5"><i class="fa-brands fa-tiktok text-white mr-1"></i> Lien Compte TikTok</label>
+                        <input type="text" id="cfg-tiktok" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5"><i class="fa-brands fa-x-twitter text-white mr-1"></i> Lien Compte X (Twitter)</label>
+                        <input type="text" id="cfg-x" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5"><i class="fa-brands fa-instagram text-pink-500 mr-1"></i> Lien Compte Instagram</label>
+                        <input type="text" id="cfg-instagram" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="pt-2 flex justify-end">
+                    <button type="submit" class="px-6 py-3 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue font-black text-xs uppercase tracking-wider shadow-lg transition active:scale-95">
+                        <i class="fa-solid fa-floppy-disk mr-1.5"></i> Mettre à jour les contacts
+                    </button>
+                </div>
+            </form>
+
+            <!-- 5. SÉCURITÉ ADMINISTRATEUR -->
+            <form id="admin-security-form" onsubmit="updateAdminPin(event)" class="admin-sub-panel hidden bg-logos-cardBg p-5 rounded-2xl border border-white/10 space-y-4">
+                <h3 class="text-base font-extrabold text-logos-yellow flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved"></i> Modifier le Code PIN Administrateur
+                </h3>
+                <p class="text-xs text-slate-400">Ce code protège l'accès aux modifications de la chaîne contre les visiteurs.</p>
+                <div class="max-w-xs">
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">Nouveau Code PIN (min. 4 caractères)</label>
+                    <input type="text" id="cfg-new-pin" minlength="4" required placeholder="Ex: LOGOS2026" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                </div>
+                <div class="pt-2 flex flex-wrap items-center gap-3">
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-logos-yellow text-logos-blue font-extrabold text-xs uppercase">
+                        Changer le Code PIN
+                    </button>
+                    <button type="button" onclick="resetAllDefaults()" class="px-4 py-2.5 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30 font-bold text-xs">
+                        Réinitialiser les données d'usine
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <!-- ==================== BARRE DE NAVIGATION INFÉRIEURE MOBILE ==================== -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 glass-nav border-t border-white/10 px-2 py-1.5">
+        <div class="flex items-center justify-around">
+            <button type="button" onclick="switchTab('live')" id="mob-nav-live" class="mob-nav-btn flex flex-col items-center justify-center py-1.5 px-3 rounded-xl text-logos-yellow transition">
+                <div class="relative">
+                    <i class="fa-solid fa-tv text-lg"></i>
+                    <span class="absolute -top-0.5 -right-1.5 w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                </div>
+                <span class="text-[10px] font-extrabold mt-1">Direct TV</span>
+            </button>
+
+            <button type="button" onclick="switchTab('news')" id="mob-nav-news" class="mob-nav-btn flex flex-col items-center justify-center py-1.5 px-3 rounded-xl text-slate-400 transition">
+                <i class="fa-solid fa-newspaper text-lg"></i>
+                <span class="text-[10px] font-semibold mt-1">Actualités</span>
+            </button>
+
+            <button type="button" onclick="switchTab('contact')" id="mob-nav-contact" class="mob-nav-btn flex flex-col items-center justify-center py-1.5 px-3 rounded-xl text-slate-400 transition">
+                <i class="fa-solid fa-address-book text-lg"></i>
+                <span class="text-[10px] font-semibold mt-1">Contact</span>
+            </button>
+
+            <button type="button" onclick="handleAdminAccess()" id="mob-nav-admin" class="mob-nav-btn flex flex-col items-center justify-center py-1.5 px-3 rounded-xl text-slate-400 transition">
+                <i class="fa-solid fa-user-shield text-lg"></i>
+                <span class="text-[10px] font-semibold mt-1" id="mob-admin-label">Admin</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ==================== MODALE 1 : LECTURE D'UNE VIDÉO D'ACTUALITÉ ==================== -->
+    <div id="video-detail-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-logos-cardBg border border-white/15 rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl my-auto">
+            <div class="px-4 py-3 bg-logos-blueDark flex items-center justify-between border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <span id="modal-video-category" class="bg-logos-yellow text-logos-blue text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full">Likasi Info</span>
+                    <span id="modal-video-date" class="text-xs text-slate-300">Aujourd'hui</span>
+                </div>
+                <button type="button" onclick="closeVideoDetailModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="video-wrapper" id="modal-video-player"></div>
+
+            <div class="p-4 sm:p-6 space-y-3">
+                <h3 id="modal-video-title" class="text-lg sm:text-xl font-extrabold text-white leading-snug"></h3>
+                
+                <div class="bg-logos-blue/30 border-l-4 border-logos-yellow p-3.5 rounded-r-xl">
+                    <span class="text-[10px] font-black uppercase tracking-wider text-logos-yellow block mb-1">Chapeau éditorial</span>
+                    <p id="modal-video-chapeau" class="text-sm text-blue-50 font-medium leading-relaxed"></p>
+                </div>
+
+                <div class="pt-2 flex items-center justify-between border-t border-white/10">
+                    <span class="text-xs text-slate-400">Rédaction LOGOS TÉLÉVISION Likasi</span>
+                    <button type="button" onclick="shareCurrentModalVideo()" class="px-4 py-2 rounded-xl bg-logos-yellow text-logos-blue text-xs font-extrabold flex items-center gap-2">
+                        <i class="fa-solid fa-share-nodes"></i> Partager l'article
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODALE 2 : CONNEXION ADMINISTRATEUR ==================== -->
+    <div id="admin-login-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-logos-cardBg border border-logos-yellow/30 rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="w-11 h-11 rounded-xl bg-logos-yellow/15 text-logos-yellow flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <button type="button" onclick="closeAdminLoginModal()" class="w-8 h-8 rounded-full bg-white/5 text-slate-400 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-extrabold text-white">Espace Administrateur</h3>
+                <p class="text-xs text-slate-400 mt-1">Veuillez saisir le code PIN de la régie LOGOS TÉLÉVISION pour modifier les paramètres.</p>
+            </div>
+
+            <form onsubmit="submitAdminLogin(event)" class="space-y-3">
+                <input type="password" id="admin-pin-input" required placeholder="Code PIN..." class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-4 py-3 text-center text-lg tracking-widest font-bold text-white focus:border-logos-yellow focus:outline-none">
+                
+                <div class="bg-blue-500/10 border border-blue-400/20 rounded-xl p-2.5 text-[11px] text-blue-200 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-logos-yellow"></i>
+                    <span>Code PIN par défaut : <strong class="text-logos-yellow font-mono">1234</strong></span>
+                </div>
+
+                <button type="submit" class="w-full py-3 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue font-black text-xs uppercase tracking-wider shadow-lg transition">
+                    Déverrouiller la Régie
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODALE 3 : AJOUTER / MODIFIER UNE VIDÉO (ADMIN) ==================== -->
+    <div id="admin-video-form-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-logos-cardBg border border-white/15 rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-auto space-y-4">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <h3 id="video-form-modal-title" class="text-base font-extrabold text-logos-yellow flex items-center gap-2">
+                    <i class="fa-solid fa-video"></i> Ajouter une vidéo d'actualité
+                </h3>
+                <button type="button" onclick="closeAdminVideoModal()" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="saveAdminVideo(event)" class="space-y-3.5">
+                <input type="hidden" id="vid-edit-id">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Titre du reportage / vidéo *</label>
+                    <input type="text" id="vid-title" required placeholder="Ex: Inauguration d'une nouvelle infrastructure à Likasi" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Catégorie *</label>
+                        <select id="vid-category" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                            <option value="Likasi Info">Likasi Info</option>
+                            <option value="Politique">Politique</option>
+                            <option value="Société">Société</option>
+                            <option value="Sport">Sport</option>
+                            <option value="Culture">Culture</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Date de publication</label>
+                        <input type="text" id="vid-date" required placeholder="Ex: 16 Nov 2026" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">URL de la vidéo (YouTube, Shorts ou MP4) *</label>
+                    <input type="text" id="vid-url" oninput="handleVideoUrlInput(this.value)" required placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Miniature automatique (selon le lien vidéo)</label>
+                    <div class="flex items-center gap-3">
+                        <img id="vid-thumb-preview" src="https://placehold.co/320x180/001E7A/F4CA00?text=APERCU+VIDEO" alt="Aperçu miniature" class="w-24 aspect-video object-cover rounded-lg border border-white/15 bg-black flex-shrink-0">
+                        <input type="text" id="vid-thumb" oninput="updateThumbPreview(this.value); saveAdminDrafts();" placeholder="Générée automatiquement depuis le lien..." class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-logos-yellow mb-1">
+                        Chapeau de la vidéo (Résumé éditorial affiché sous le titre) *
+                    </label>
+                    <textarea id="vid-chapeau" rows="3" required placeholder="Rédigez l'accroche journalistique qui présente l'essentiel de cette vidéo aux téléspectateurs..." class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeAdminVideoModal()" class="px-4 py-2.5 rounded-xl bg-white/10 text-slate-300 text-xs font-bold">Annuler</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-logos-yellow text-logos-blue text-xs font-black uppercase">Enregistrer la vidéo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODALE 4 : AJOUTER / MODIFIER UNE BANNIÈRE PUB (ADMIN) ==================== -->
+    <div id="admin-ad-form-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-logos-cardBg border border-white/15 rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-auto space-y-4">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <h3 id="ad-form-modal-title" class="text-base font-extrabold text-logos-yellow flex items-center gap-2">
+                    <i class="fa-solid fa-rectangle-ad"></i> Ajouter une bannière publicitaire
+                </h3>
+                <button type="button" onclick="closeAdminAdModal()" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="saveAdminAd(event)" class="space-y-3.5">
+                <input type="hidden" id="ad-edit-id">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Nom de l'annonceur / Titre de la pub *</label>
+                    <input type="text" id="ad-title" required placeholder="Ex: Supermarché Likasi Center — Promotions" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Texte d'accroche / Offre *</label>
+                    <input type="text" id="ad-subtitle" required placeholder="Ex: Profitez de -20% sur tous vos achats ce week-end à Likasi !" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Image de la bannière (URL ou fichier image) *</label>
+                    <input type="text" id="ad-image" required placeholder="https://..." class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none mb-2">
+                    <input type="file" accept="image/*" onchange="handleAdImageUpload(event)" class="w-full text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-white/15 file:text-white cursor-pointer">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Lien de redirection (Site / WhatsApp)</label>
+                        <input type="text" id="ad-link" placeholder="https://..." class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Texte du bouton d'action</label>
+                        <input type="text" id="ad-cta" required value="Découvrir l'offre" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeAdminAdModal()" class="px-4 py-2.5 rounded-xl bg-white/10 text-slate-300 text-xs font-bold">Annuler</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-logos-yellow text-logos-blue text-xs font-black uppercase">Publier la bannière</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== NOTIFICATION TOAST ==================== -->
+    <div id="toast-notification" class="fixed top-20 right-4 z-50 hidden transform transition-all duration-300 translate-y-2 opacity-0">
+        <div class="bg-logos-blueDark border border-logos-yellow text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-xs font-bold">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-logos-yellow text-base"></i>
+            <span id="toast-message">Action effectuée avec succès</span>
+        </div>
+    </div>
+
+    <!-- ==================== LOGIQUE JAVASCRIPT COMPLÈTE ==================== -->
+    <script>
+        const STORAGE_KEY = 'logos_tv_likasi_data_v3';
+        const SESSION_KEY = 'logos_tv_admin_session_v3';
+
+        // Stockage sécurisé (fonctionne même si Chrome ou une WebView bloque localStorage)
+        const memoryStorage = {};
+        function safeGetItem(key) {
+            try {
+                return window.localStorage.getItem(key);
+            } catch (e) {
+                return memoryStorage[key] || null;
+            }
+        }
+        function safeSetItem(key, val) {
+            memoryStorage[key] = val;
+            try {
+                window.localStorage.setItem(key, val);
+            } catch (e) {
+                console.warn('Stockage local limité, sauvegarde en mémoire active.');
+            }
+        }
+        function safeRemoveItem(key) {
+            delete memoryStorage[key];
+            try {
+                window.localStorage.removeItem(key);
+            } catch (e) {}
+        }
+
+        // SVG original du logo LOGOS TÉLÉVISION
+        const DEFAULT_LOGO_SVG = `
+            <svg viewBox="0 0 360 145" class="w-full h-auto drop-shadow-md" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 18 24 H 225 L 195 104 H 18 C 10 104 4 98 4 90 V 38 C 4 30 10 24 18 24 Z" fill="#F4CA00"/>
+                <polygon points="105,24 145,24 115,104 75,104" fill="#FFE047" opacity="0.5"/>
+                <polygon points="165,24 205,24 175,104 135,104" fill="#FFE047" opacity="0.5"/>
+                <text x="16" y="84" font-family="Inter, Arial Black, sans-serif" font-weight="900" font-style="italic" font-size="64" fill="#001E7A" letter-spacing="-2">LOG</text>
+                <g transform="translate(232, 8) rotate(24)">
+                    <path d="M 16 0 H 92 C 101 0 108 7 108 16 V 26 A 12 12 0 0 0 108 50 V 74 A 12 12 0 0 0 84 74 V 84 C 84 93 77 100 68 100 H 16 C 7 100 0 93 0 84 V 16 C 0 7 7 0 16 0 Z" fill="#001E7A" stroke="#FFFFFF" stroke-width="3"/>
+                </g>
+                <text x="196" y="84" font-family="Inter, Arial Black, sans-serif" font-weight="900" font-style="italic" font-size="64" fill="#FFFFFF" stroke="#001E7A" stroke-width="2" paint-order="stroke" letter-spacing="-2">OS</text>
+                <text x="22" y="132" font-family="Inter, Arial, sans-serif" font-weight="900" font-style="italic" font-size="25" fill="#FFFFFF" letter-spacing="3.5">TÉLÉVISION</text>
+            </svg>
+        `;
+
+        // Données par défaut de LOGOS TÉLÉVISION (Likasi, Haut-Katanga, RDC)
+        const DEFAULT_DATA = {
+            adminPin: '1234',
+            settings: {
+                channelName: 'LOGOS TÉLÉVISION',
+                slogan: 'Votre plaisir',
+                logoUrl: '',
+                streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+                programTitle: 'Journal Télévisé — Édition Spéciale Likasi',
+                programDesc: "Toute l'actualité politique, économique, minière et sociale de la ville montagneuse de Likasi et du Haut-Katanga.",
+                ticker: "Bienvenue sur LOGOS TÉLÉVISION Likasi — Votre plaisir • Suivez nos éditions d'information en direct depuis le Haut-Katanga (RDC) • Contactez la rédaction au +243 970 000 000.",
+                phone: '+243 970 000 000',
+                address: 'Likasi, Province du Haut-Katanga, République Démocratique du Congo',
+                socials: {
+                    youtube: 'https://youtube.com',
+                    facebook: 'https://facebook.com',
+                    tiktok: 'https://tiktok.com',
+                    x: 'https://x.com',
+                    instagram: 'https://instagram.com'
+                }
+            },
+            ads: [
+                {
+                    id: 'ad-1',
+                    title: 'Annoncez sur LOGOS TÉLÉVISION Likasi',
+                    subtitle: 'Touchez des milliers de téléspectateurs dans tout le Haut-Katanga. Réservez votre bannière publicitaire ici !',
+                    image: 'https://placehold.co/900x320/001E7A/F4CA00?text=VOTRE+PUBLICITE+SUR+LOGOS+TV+LIKASI',
+                    link: 'https://wa.me/243970000000',
+                    cta: 'Contacter la régie pub'
+                },
+                {
+                    id: 'ad-2',
+                    title: 'Partenaire Économique du Haut-Katanga',
+                    subtitle: 'Découvrez les meilleures offres commerciales et services disponibles cette semaine à Likasi.',
+                    image: 'https://placehold.co/900x320/0A31A8/FFFFFF?text=ESPACE+PARTENAIRE+OFFICIEL+LOGOS+TV',
+                    link: 'https://facebook.com',
+                    cta: 'En savoir plus'
+                }
+            ],
+            videos: [
+                {
+                    id: 'vid-1',
+                    title: 'Développement urbain : modernisation des artères principales de Likasi',
+                    category: 'Likasi Info',
+                    date: '16 Nov 2026',
+                    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+                    thumbnail: '',
+                    chapeau: "Les travaux de réhabilitation des axes routiers stratégiques de la ville montagneuse avancent à grands pas. Reportage complet de notre rédaction sur l'impact économique pour les habitants de Likasi."
+                },
+                {
+                    id: 'vid-2',
+                    title: 'Secteur minier au Haut-Katanga : perspectives de production et emploi local',
+                    category: 'Politique',
+                    date: '15 Nov 2026',
+                    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                    thumbnail: '',
+                    chapeau: "Analyse approfondie des retombées de la transformation locale des minerais à Likasi et des initiatives en faveur de la jeunesse katangaise."
+                },
+                {
+                    id: 'vid-3',
+                    title: 'Sport à Likasi : effervescence au stade avant le grand derby katangais',
+                    category: 'Sport',
+                    date: '14 Nov 2026',
+                    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoy.mp4',
+                    thumbnail: '',
+                    chapeau: "Les supporters se mobilisent massivement pour soutenir les clubs locaux. Ambiance, déclarations des entraîneurs et enjeux de la rencontre sur LOGOS TÉLÉVISION."
+                },
+                {
+                    id: 'vid-4',
+                    title: 'Culture & Talents : les artistes musiciens de Likasi à l’honneur',
+                    category: 'Culture',
+                    date: '13 Nov 2026',
+                    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+                    thumbnail: '',
+                    chapeau: "Retour en images sur le festival culturel organisé au cœur de Likasi pour promouvoir la richesse artistique du Haut-Katanga."
+                }
+            ]
+        };
+
+        let appState = loadAppState();
+        let isAdminLoggedIn = false;
+        let currentActiveTab = 'live';
+        let currentAdminSubTab = 'stream';
+        let currentCategory = 'Toutes';
+        let hlsInstance = null;
+        let mpegtsPlayerInstance = null;
+        let currentOpenedVideo = null;
+        let currentAdIndex = 0;
+        let adRotationTimer = null;
+        let streamWatchdogTimer = null;
+        let lastPlaybackTime = 0;
+        let stallCounter = 0;
+
+        // ==================== EXTRACTION AUTOMATIQUE DES MINIATURES ====================
+        function extractYouTubeId(url) {
+            if (!url) return null;
+            const regExp = /^.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/|live\/)([^#&?]*).*/;
+            const match = url.trim().match(regExp);
+            return (match && match[1] && match[1].length === 11) ? match[1] : null;
+        }
+
+        function getAutoThumbnailFromUrl(url) {
+            const ytId = extractYouTubeId(url);
+            if (ytId) {
+                return `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+            }
+            return '';
+        }
+
+        function handleVideoUrlInput(url) {
+            const autoThumb = getAutoThumbnailFromUrl(url);
+            const thumbInput = document.getElementById('vid-thumb');
+            if (autoThumb) {
+                thumbInput.value = autoThumb;
+                updateThumbPreview(autoThumb);
+            } else if (!thumbInput.value.trim()) {
+                updateThumbPreview('');
+            }
+            saveAdminDrafts();
+        }
+
+        function updateThumbPreview(thumbUrl) {
+            const previewEl = document.getElementById('vid-thumb-preview');
+            if (!previewEl) return;
+            previewEl.src = thumbUrl && thumbUrl.trim() !== ''
+                ? thumbUrl.trim()
+                : 'https://placehold.co/320x180/001E7A/F4CA00?text=APERCU+VIDEO';
+        }
+
+        // ==================== GESTION DE SESSION & BROUILLONS PERSISTANTS ====================
+        function saveAdminSessionState(extra = {}) {
+            try {
+                const existing = JSON.parse(safeGetItem(SESSION_KEY) || '{}');
+                const updated = {
+                    ...existing,
+                    isAdminLoggedIn,
+                    activeTab: currentActiveTab,
+                    adminSubTab: currentAdminSubTab,
+                    ...extra
+                };
+                safeSetItem(SESSION_KEY, JSON.stringify(updated));
+            } catch (e) {
+                console.warn('Impossible de sauvegarder la session:', e);
+            }
+        }
+
+        function saveAdminDrafts() {
+            if (!isAdminLoggedIn) return;
+            const videoModalOpen = !document.getElementById('admin-video-form-modal').classList.contains('hidden');
+            const adModalOpen = !document.getElementById('admin-ad-form-modal').classList.contains('hidden');
+
+            const sessionPatch = {
+                streamDraft: {
+                    logoUrl: document.getElementById('cfg-logo-url')?.value || '',
+                    channelName: document.getElementById('cfg-channel-name')?.value || '',
+                    slogan: document.getElementById('cfg-slogan')?.value || '',
+                    streamUrl: document.getElementById('cfg-stream-url')?.value || '',
+                    programTitle: document.getElementById('cfg-program-title')?.value || '',
+                    programDesc: document.getElementById('cfg-program-desc')?.value || '',
+                    ticker: document.getElementById('cfg-ticker')?.value || ''
+                },
+                socialsDraft: {
+                    phone: document.getElementById('cfg-phone')?.value || '',
+                    address: document.getElementById('cfg-address')?.value || '',
+                    youtube: document.getElementById('cfg-youtube')?.value || '',
+                    facebook: document.getElementById('cfg-facebook')?.value || '',
+                    tiktok: document.getElementById('cfg-tiktok')?.value || '',
+                    x: document.getElementById('cfg-x')?.value || '',
+                    instagram: document.getElementById('cfg-instagram')?.value || ''
+                }
+            };
+
+            if (videoModalOpen) {
+                sessionPatch.openModal = 'video';
+                sessionPatch.videoDraft = {
+                    editId: document.getElementById('vid-edit-id').value,
+                    title: document.getElementById('vid-title').value,
+                    category: document.getElementById('vid-category').value,
+                    date: document.getElementById('vid-date').value,
+                    url: document.getElementById('vid-url').value,
+                    thumb: document.getElementById('vid-thumb').value,
+                    chapeau: document.getElementById('vid-chapeau').value
+                };
+            } else if (adModalOpen) {
+                sessionPatch.openModal = 'ad';
+                sessionPatch.adDraft = {
+                    editId: document.getElementById('ad-edit-id').value,
+                    title: document.getElementById('ad-title').value,
+                    subtitle: document.getElementById('ad-subtitle').value,
+                    image: document.getElementById('ad-image').value,
+                    link: document.getElementById('ad-link').value,
+                    cta: document.getElementById('ad-cta').value
+                };
+            } else {
+                sessionPatch.openModal = null;
+            }
+
+            saveAdminSessionState(sessionPatch);
+        }
+
+        function restoreAdminSession() {
+            try {
+                const savedSession = JSON.parse(safeGetItem(SESSION_KEY) || 'null');
+                if (!savedSession || !savedSession.isAdminLoggedIn) return;
+
+                isAdminLoggedIn = true;
+                updateAdminUIState();
+
+                if (savedSession.activeTab) {
+                    switchTab(savedSession.activeTab);
+                }
+                if (savedSession.adminSubTab) {
+                    switchAdminSubTab(savedSession.adminSubTab);
+                }
+
+                if (savedSession.streamDraft) {
+                    const sd = savedSession.streamDraft;
+                    if (sd.logoUrl !== undefined) document.getElementById('cfg-logo-url').value = sd.logoUrl;
+                    if (sd.channelName) document.getElementById('cfg-channel-name').value = sd.channelName;
+                    if (sd.slogan) document.getElementById('cfg-slogan').value = sd.slogan;
+                    if (sd.streamUrl) document.getElementById('cfg-stream-url').value = sd.streamUrl;
+                    if (sd.programTitle) document.getElementById('cfg-program-title').value = sd.programTitle;
+                    if (sd.programDesc) document.getElementById('cfg-program-desc').value = sd.programDesc;
+                    if (sd.ticker) document.getElementById('cfg-ticker').value = sd.ticker;
+                }
+
+                if (savedSession.socialsDraft) {
+                    const soc = savedSession.socialsDraft;
+                    if (soc.phone) document.getElementById('cfg-phone').value = soc.phone;
+                    if (soc.address) document.getElementById('cfg-address').value = soc.address;
+                    if (soc.youtube) document.getElementById('cfg-youtube').value = soc.youtube;
+                    if (soc.facebook) document.getElementById('cfg-facebook').value = soc.facebook;
+                    if (soc.tiktok) document.getElementById('cfg-tiktok').value = soc.tiktok;
+                    if (soc.x) document.getElementById('cfg-x').value = soc.x;
+                    if (soc.instagram) document.getElementById('cfg-instagram').value = soc.instagram;
+                }
+
+                if (savedSession.openModal === 'video' && savedSession.videoDraft) {
+                    const vd = savedSession.videoDraft;
+                    openAdminVideoModal(vd.editId || null, true);
+                    document.getElementById('vid-edit-id').value = vd.editId || '';
+                    document.getElementById('vid-title').value = vd.title || '';
+                    document.getElementById('vid-category').value = vd.category || 'Likasi Info';
+                    document.getElementById('vid-date').value = vd.date || '';
+                    document.getElementById('vid-url').value = vd.url || '';
+                    document.getElementById('vid-thumb').value = vd.thumb || '';
+                    updateThumbPreview(vd.thumb || getAutoThumbnailFromUrl(vd.url));
+                    document.getElementById('vid-chapeau').value = vd.chapeau || '';
+                } else if (savedSession.openModal === 'ad' && savedSession.adDraft) {
+                    const ad = savedSession.adDraft;
+                    openAdminAdModal(ad.editId || null, true);
+                    document.getElementById('ad-edit-id').value = ad.editId || '';
+                    document.getElementById('ad-title').value = ad.title || '';
+                    document.getElementById('ad-subtitle').value = ad.subtitle || '';
+                    document.getElementById('ad-image').value = ad.image || '';
+                    document.getElementById('ad-link').value = ad.link || '';
+                    document.getElementById('ad-cta').value = ad.cta || "Découvrir l'offre";
+                }
+            } catch (e) {
+                console.warn('Erreur restauration session:', e);
+            }
+        }
+
+        function attachAutoDraftListeners() {
+            const draftFieldIds = [
+                'cfg-logo-url', 'cfg-channel-name', 'cfg-slogan', 'cfg-stream-url',
+                'cfg-program-title', 'cfg-program-desc', 'cfg-ticker',
+                'cfg-phone', 'cfg-address', 'cfg-youtube', 'cfg-facebook',
+                'cfg-tiktok', 'cfg-x', 'cfg-instagram',
+                'vid-title', 'vid-category', 'vid-date', 'vid-chapeau',
+                'ad-title', 'ad-subtitle', 'ad-image', 'ad-link', 'ad-cta'
+            ];
+            draftFieldIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', saveAdminDrafts);
+                    el.addEventListener('change', saveAdminDrafts);
+                }
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden' && isAdminLoggedIn) {
+                    saveAdminDrafts();
+                }
+            });
+            window.addEventListener('pagehide', () => {
+                if (isAdminLoggedIn) saveAdminDrafts();
+            });
+        }
+
+        // Lien Raw GitHub vers votre fichier config.json distant (remplacez par votre lien raw exact si nécessaire)
+        const REMOTE_CONFIG_URL = 'https://raw.githubusercontent.com/VOTRE-UTILISATEUR/VOTRE-DEPOT/main/config.json';
+
+        function exportConfigJson() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "config.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast('Fichier config.json téléchargé !');
+        }
+
+        // ==================== INITIALISATION AU CHARGEMENT ====================
+        window.addEventListener('DOMContentLoaded', async () => {
+            const urlsToTry = [
+                'config.json?v=' + Date.now(),
+                REMOTE_CONFIG_URL + '?v=' + Date.now()
+            ];
+
+            for (const url of urlsToTry) {
+                if (url.includes('VOTRE-UTILISATEUR')) continue;
+                try {
+                    const response = await fetch(url);
+                    if (response.ok) {
+                        const remoteConfig = await response.json();
+                        if (!safeGetItem(STORAGE_KEY)) {
+                            appState = {
+                                ...DEFAULT_DATA,
+                                ...remoteConfig,
+                                settings: {
+                                    ...DEFAULT_DATA.settings,
+                                    ...(remoteConfig.settings || {}),
+                                    socials: {
+                                        ...DEFAULT_DATA.settings.socials,
+                                        ...(remoteConfig.settings?.socials || {})
+                                    }
+                                },
+                                ads: remoteConfig.ads || DEFAULT_DATA.ads,
+                                videos: remoteConfig.videos || DEFAULT_DATA.videos
+                            };
+                        }
+                        break;
+                    }
+                } catch (e) {
+                    console.warn('Config distante non accessible sur :', url);
+                }
+            }
+
+            applySettingsToUI();
+            initLivePlayer(appState.settings.streamUrl);
+            renderAdBanner();
+            startAdAutoRotation();
+            renderNewsList();
+            renderLivePreviewNews();
+            attachAutoDraftListeners();
+            restoreAdminSession();
+        });
+
+        function loadAppState() {
+            try {
+                const saved = safeGetItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    return {
+                        ...DEFAULT_DATA,
+                        ...parsed,
+                        settings: {
+                            ...DEFAULT_DATA.settings,
+                            ...(parsed.settings || {}),
+                            socials: { ...DEFAULT_DATA.settings.socials, ...(parsed.settings?.socials || {}) }
+                        },
+                        ads: parsed.ads || DEFAULT_DATA.ads,
+                        videos: parsed.videos || DEFAULT_DATA.videos
+                    };
+                }
+            } catch (e) {
+                console.warn('Erreur de lecture stockage local:', e);
+            }
+            return JSON.parse(JSON.stringify(DEFAULT_DATA));
+        }
+
+        function persistAppState() {
+            safeSetItem(STORAGE_KEY, JSON.stringify(appState));
+        }
+
+        function renderBrandLogo(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const customLogo = appState.settings.logoUrl;
+            if (customLogo && customLogo.trim() !== '') {
+                container.innerHTML = `<img src="${customLogo}" alt="${appState.settings.channelName}" onerror="this.style.display='none'" class="max-h-12 sm:max-h-14 w-auto object-contain rounded-lg">`;
+            } else {
+                container.innerHTML = DEFAULT_LOGO_SVG;
+            }
+        }
+
+        function normalizeUrl(url) {
+            if (!url) return '#';
+            const trimmed = url.trim();
+            if (/^https?:\/\//i.test(trimmed)) return trimmed;
+            return 'https://' + trimmed;
+        }
+
+        function applySettingsToUI() {
+            const s = appState.settings;
+            renderBrandLogo('header-logo-container');
+            renderBrandLogo('contact-logo-container');
+            renderBrandLogo('admin-logo-preview');
+
+            document.getElementById('header-channel-name').textContent = s.channelName;
+            document.getElementById('header-slogan').textContent = `« ${s.slogan} »`;
+            document.getElementById('live-channel-subtitle').textContent = `${s.channelName} — Likasi`;
+            document.getElementById('live-slogan-badge').textContent = `« ${s.slogan} »`;
+            document.getElementById('live-program-title').textContent = s.programTitle;
+            document.getElementById('live-program-desc').textContent = s.programDesc;
+            document.getElementById('live-ticker-text').textContent = s.ticker;
+
+            document.getElementById('contact-channel-title').textContent = s.channelName;
+            document.getElementById('contact-slogan-text').textContent = `« ${s.slogan} »`;
+            document.getElementById('contact-address-text').innerHTML = `<i class="fa-solid fa-location-dot text-logos-yellow"></i> ${s.address}`;
+            document.getElementById('contact-phone-display').textContent = s.phone;
+            document.getElementById('contact-phone-link').href = `tel:${s.phone.replace(/\s+/g, '')}`;
+            const cleanDigits = s.phone.replace(/[^0-9]/g, '');
+            document.getElementById('contact-whatsapp-link').href = `https://wa.me/${cleanDigits}`;
+
+            const ytUrl = normalizeUrl(s.socials.youtube);
+            const fbUrl = normalizeUrl(s.socials.facebook);
+            const ttUrl = normalizeUrl(s.socials.tiktok);
+            const xUrl = normalizeUrl(s.socials.x);
+            const igUrl = normalizeUrl(s.socials.instagram);
+
+            document.getElementById('social-link-youtube').href = ytUrl;
+            document.getElementById('social-link-facebook').href = fbUrl;
+            document.getElementById('social-link-tiktok').href = ttUrl;
+            document.getElementById('social-link-x').href = xUrl;
+            document.getElementById('social-link-instagram').href = igUrl;
+
+            document.getElementById('quick-social-youtube').href = ytUrl;
+            document.getElementById('quick-social-facebook').href = fbUrl;
+            document.getElementById('quick-social-tiktok').href = ttUrl;
+            document.getElementById('quick-social-x').href = xUrl;
+            document.getElementById('quick-social-instagram').href = igUrl;
+
+            document.getElementById('cfg-logo-url').value = s.logoUrl || '';
+            document.getElementById('cfg-channel-name').value = s.channelName;
+            document.getElementById('cfg-slogan').value = s.slogan;
+            document.getElementById('cfg-stream-url').value = s.streamUrl;
+            document.getElementById('cfg-program-title').value = s.programTitle;
+            document.getElementById('cfg-program-desc').value = s.programDesc;
+            document.getElementById('cfg-ticker').value = s.ticker;
+            document.getElementById('cfg-phone').value = s.phone;
+            document.getElementById('cfg-address').value = s.address;
+            document.getElementById('cfg-youtube').value = s.socials.youtube;
+            document.getElementById('cfg-facebook').value = s.socials.facebook;
+            document.getElementById('cfg-tiktok').value = s.socials.tiktok;
+            document.getElementById('cfg-x').value = s.socials.x;
+            document.getElementById('cfg-instagram').value = s.socials.instagram;
+        }
+
+        // ==================== LECTEUR TV EN DIRECT ULTRA-FLUIDE (VLC / IPTV / HLS / YOUTUBE / MP4) ====================
+        function destroyActiveStreamPlayers() {
+            if (streamWatchdogTimer) {
+                clearInterval(streamWatchdogTimer);
+                streamWatchdogTimer = null;
+            }
+            if (hlsInstance) {
+                try { hlsInstance.destroy(); } catch (e) {}
+                hlsInstance = null;
+            }
+            if (mpegtsPlayerInstance) {
+                try {
+                    mpegtsPlayerInstance.pause();
+                    mpegtsPlayerInstance.unload();
+                    mpegtsPlayerInstance.detachMediaElement();
+                    mpegtsPlayerInstance.destroy();
+                } catch (e) {}
+                mpegtsPlayerInstance = null;
+            }
+        }
+
+        function initLivePlayer(url) {
+            const container = document.getElementById('live-player-container');
+            destroyActiveStreamPlayers();
+
+            const cleanUrl = (url || '').trim();
+            const ytId = extractYouTubeId(cleanUrl);
+            if (ytId) {
+                container.innerHTML = `
+                    <iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1" 
+                            title="LOGOS TÉLÉVISION Direct" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen></iframe>
+                `;
+                return;
+            }
+
+            // Si c'est une playlist IPTV .m3u (pas .m3u8), on extrait automatiquement le premier lien de flux
+            if (/\.m3u(\?|$)/i.test(cleanUrl) && !/\.m3u8(\?|$)/i.test(cleanUrl)) {
+                fetch(cleanUrl)
+                    .then(res => res.text())
+                    .then(text => {
+                        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+                        if (lines.length > 0) {
+                            initLivePlayer(lines[0]);
+                        } else {
+                            showToast('Aucun flux valide trouvé dans la playlist M3U.', true);
+                        }
+                    })
+                    .catch(() => {
+                        startStreamPlayback(cleanUrl, container);
+                    });
+                return;
+            }
+
+            startStreamPlayback(cleanUrl, container);
+        }
+
+        function attachSmoothStreamHandlers(video, url) {
+            const loader = document.getElementById('live-buffer-loader');
+            const unmuteBtn = document.getElementById('live-unmute-btn');
+
+            video.addEventListener('waiting', () => {
+                if (loader) loader.classList.remove('hidden');
+            });
+            video.addEventListener('playing', () => {
+                if (loader) loader.classList.add('hidden');
+                stallCounter = 0;
+            });
+            video.addEventListener('canplay', () => {
+                if (loader) loader.classList.add('hidden');
+            });
+
+            if (unmuteBtn) {
+                unmuteBtn.onclick = () => {
+                    video.muted = false;
+                    video.volume = 1;
+                    video.play().catch(() => {});
+                    unmuteBtn.classList.add('hidden');
+                };
+            }
+
+            // Watchdog anti-gel : relance silencieusement si l'image se fige plus de 8 secondes
+            lastPlaybackTime = 0;
+            stallCounter = 0;
+            streamWatchdogTimer = setInterval(() => {
+                if (currentActiveTab !== 'live' || video.paused) return;
+                if (Math.abs(video.currentTime - lastPlaybackTime) < 0.1) {
+                    stallCounter++;
+                    if (stallCounter >= 4) {
+                        stallCounter = 0;
+                        if (hlsInstance) {
+                            hlsInstance.startLoad();
+                            video.play().catch(() => {});
+                        } else if (mpegtsPlayerInstance) {
+                            mpegtsPlayerInstance.unload();
+                            mpegtsPlayerInstance.load();
+                            mpegtsPlayerInstance.play().catch(() => {});
+                        } else {
+                            initLivePlayer(url);
+                        }
+                    }
+                } else {
+                    lastPlaybackTime = video.currentTime;
+                    stallCounter = 0;
+                }
+            }, 2000);
+        }
+
+        function startStreamPlayback(url, container) {
+            container.innerHTML = `
+                <video id="live-html5-video" controls autoplay muted playsinline preload="auto"></video>
+                <div id="live-buffer-loader" class="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-2 pointer-events-none transition-opacity">
+                    <div class="w-9 h-9 border-4 border-logos-yellow border-t-transparent rounded-full animate-spin"></div>
+                    <span class="text-[11px] font-bold text-white bg-black/60 px-3 py-1 rounded-full">Connexion au flux direct...</span>
+                </div>
+                <button type="button" id="live-unmute-btn" class="absolute bottom-12 left-3 z-10 px-3 py-1.5 rounded-full bg-logos-yellow text-logos-blue font-black text-xs shadow-lg flex items-center gap-1.5 animate-bounce">
+                    <i class="fa-solid fa-volume-high"></i> Activer le son
+                </button>
+            `;
+            const video = document.getElementById('live-html5-video');
+            attachSmoothStreamHandlers(video, url);
+
+            const isTsStream = /\.ts(\?|$)/i.test(url) || /type=mpegts/i.test(url);
+            const isFlvStream = /\.flv(\?|$)/i.test(url);
+            const isHlsStream = /\.m3u8(\?|$)/i.test(url) || /format=m3u8/i.test(url) || (!/\.(mp4|webm|ogg|ts|flv)(\?|$)/i.test(url) && /^https?:\/\//i.test(url));
+
+            // 1. Flux IPTV / VLC MPEG-TS (.ts) ou FLV
+            if ((isTsStream || isFlvStream) && typeof mpegts !== 'undefined' && mpegts.getFeatureList().mseLivePlayback) {
+                mpegtsPlayerInstance = mpegts.createPlayer({
+                    type: isFlvStream ? 'flv' : 'mpegts',
+                    isLive: true,
+                    url: url
+                }, {
+                    enableWorker: true,
+                    enableStashBuffer: true,
+                    stashInitialSize: 384 * 1024,
+                    liveBufferLatencyChasing: true,
+                    liveBufferLatencyMaxLatency: 4.5,
+                    liveBufferLatencyMinRemain: 1.2,
+                    autoCleanupSourceBuffer: true,
+                    autoCleanupMaxBackwardDuration: 20,
+                    autoCleanupMinBackwardDuration: 10
+                });
+                mpegtsPlayerInstance.attachMediaElement(video);
+                mpegtsPlayerInstance.load();
+                mpegtsPlayerInstance.play().catch(() => {});
+                return;
+            }
+
+            // 2. Flux HLS / IPTV / VLC (.m3u8) avec adaptation dynamique de débit
+            if (isHlsStream && typeof Hls !== 'undefined' && Hls.isSupported()) {
+                hlsInstance = new Hls({
+                    enableWorker: true,
+                    lowLatencyMode: false,
+                    maxBufferLength: 20,
+                    maxMaxBufferLength: 40,
+                    backBufferLength: 15,
+                    liveSyncDurationCount: 3,
+                    liveMaxLatencyDurationCount: 6,
+                    abrEwmaDefaultEstimate: 1200000,
+                    abrBandWidthFactor: 0.85,
+                    abrBandWidthUpFactor: 0.6,
+                    capLevelToPlayerSize: true,
+                    startLevel: -1,
+                    manifestLoadingMaxRetry: 6,
+                    manifestLoadingRetryDelay: 800,
+                    levelLoadingMaxRetry: 6,
+                    levelLoadingRetryDelay: 800,
+                    fragLoadingMaxRetry: 6,
+                    fragLoadingRetryDelay: 800
+                });
+                hlsInstance.loadSource(url);
+                hlsInstance.attachMedia(video);
+                hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+                    video.play().catch(() => {});
+                });
+                hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+                    if (data.fatal) {
+                        if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                            hlsInstance.startLoad();
+                        } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+                            hlsInstance.recoverMediaError();
+                        } else {
+                            hlsInstance.destroy();
+                            hlsInstance = null;
+                            if (typeof mpegts !== 'undefined' && mpegts.getFeatureList().mseLivePlayback) {
+                                mpegtsPlayerInstance = mpegts.createPlayer({
+                                    type: 'mpegts',
+                                    isLive: true,
+                                    enableStashBuffer: true,
+                                    url: url
+                                });
+                                mpegtsPlayerInstance.attachMediaElement(video);
+                                mpegtsPlayerInstance.load();
+                                mpegtsPlayerInstance.play().catch(() => {});
+                            } else {
+                                video.src = url;
+                                video.play().catch(() => {});
+                            }
+                        }
+                    }
+                });
+                return;
+            }
+
+            // 3. Lecture native (Safari iOS HLS ou MP4 direct)
+            video.src = url;
+            video.play().catch(() => {});
+        }
+
+        function reloadLiveStream() {
+            initLivePlayer(appState.settings.streamUrl);
+            showToast('Flux en direct actualisé pour une fluidité optimale');
+        }
+
+        function changeStreamQuality(quality) {
+            if (hlsInstance && hlsInstance.levels && hlsInstance.levels.length > 0) {
+                if (quality === 'auto') {
+                    hlsInstance.currentLevel = -1;
+                } else if (quality === '480p') {
+                    hlsInstance.currentLevel = 0;
+                } else if (quality === '720p') {
+                    hlsInstance.currentLevel = Math.min(1, hlsInstance.levels.length - 1);
+                } else {
+                    hlsInstance.currentLevel = hlsInstance.levels.length - 1;
+                }
+            }
+            showToast(`Qualité vidéo réglée sur : ${quality.toUpperCase()}`);
+        }
+
+        // ==================== BANNIÈRES PUBLICITAIRES ====================
+        function renderAdBanner() {
+            const display = document.getElementById('ad-banner-display');
+            const dots = document.getElementById('ad-banner-dots');
+            const ads = appState.ads || [];
+
+            if (ads.length === 0) {
+                display.innerHTML = `
+                    <div class="w-full p-6 text-center space-y-2">
+                        <p class="text-sm font-bold text-logos-yellow">Espace Publicitaire Disponible</p>
+                        <p class="text-xs text-slate-400">Contactez la régie commerciale de LOGOS TÉLÉVISION Likasi pour diffuser votre publicité ici.</p>
+                    </div>
+                `;
+                dots.innerHTML = '';
+                return;
+            }
+
+            if (currentAdIndex >= ads.length) currentAdIndex = 0;
+            const ad = ads[currentAdIndex];
+            const hasLink = ad.link && ad.link.trim() !== '';
+
+            display.innerHTML = `
+                <div class="w-full relative group">
+                    <img src="${ad.image}" onerror="this.src='https://placehold.co/900x320/001E7A/F4CA00?text=PUBLICITE+LOGOS+TV'" alt="${ad.title}" class="w-full h-44 sm:h-52 object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent flex flex-col justify-end p-4 sm:p-5">
+                        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+                            <div class="space-y-1">
+                                <span class="inline-block bg-logos-yellow text-logos-blue text-[10px] font-black uppercase px-2 py-0.5 rounded">Sponsorisé</span>
+                                <h3 class="text-base sm:text-lg font-extrabold text-white leading-tight">${ad.title}</h3>
+                                <p class="text-xs text-slate-200 line-clamp-2">${ad.subtitle}</p>
+                            </div>
+                            ${hasLink ? `
+                                <a href="${ad.link}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue text-xs font-black uppercase tracking-wide flex items-center gap-1.5 self-start sm:self-end flex-shrink-0 shadow-lg transition">
+                                    <span>${ad.cta || 'Voir'}</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            dots.innerHTML = ads.map((_, idx) => `
+                <button type="button" onclick="goToAdBanner(${idx})" class="h-2 rounded-full transition-all ${idx === currentAdIndex ? 'w-6 bg-logos-yellow' : 'w-2 bg-white/25 hover:bg-white/50'}"></button>
+            `).join('');
+        }
+
+        function nextAdBanner() {
+            if (!appState.ads || appState.ads.length === 0) return;
+            currentAdIndex = (currentAdIndex + 1) % appState.ads.length;
+            renderAdBanner();
+        }
+
+        function prevAdBanner() {
+            if (!appState.ads || appState.ads.length === 0) return;
+            currentAdIndex = (currentAdIndex - 1 + appState.ads.length) % appState.ads.length;
+            renderAdBanner();
+        }
+
+        function goToAdBanner(index) {
+            currentAdIndex = index;
+            renderAdBanner();
+        }
+
+        function startAdAutoRotation() {
+            if (adRotationTimer) clearInterval(adRotationTimer);
+            adRotationTimer = setInterval(() => {
+                if (currentActiveTab === 'live' && appState.ads && appState.ads.length > 1) {
+                    nextAdBanner();
+                }
+            }, 6000);
+        }
+
+        // ==================== NAVIGATION ONGLETS ====================
+        function switchTab(tabName) {
+            currentActiveTab = tabName;
+            saveAdminSessionState();
+
+            document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
+            const targetView = document.getElementById(`view-${tabName}`);
+            if (targetView) targetView.classList.remove('hidden');
+
+            document.querySelectorAll('.desk-nav-btn').forEach(btn => {
+                btn.classList.remove('bg-logos-yellow', 'text-logos-blue', 'font-bold');
+                btn.classList.add('text-slate-300', 'font-semibold');
+            });
+            const activeDeskBtn = document.getElementById(`desk-nav-${tabName}`);
+            if (activeDeskBtn) {
+                activeDeskBtn.classList.add('bg-logos-yellow', 'text-logos-blue', 'font-bold');
+                activeDeskBtn.classList.remove('text-slate-300', 'font-semibold');
+            }
+
+            document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+                btn.classList.remove('text-logos-yellow');
+                btn.classList.add('text-slate-400');
+            });
+            const activeMobBtn = document.getElementById(`mob-nav-${tabName}`);
+            if (activeMobBtn) {
+                activeMobBtn.classList.add('text-logos-yellow');
+                activeMobBtn.classList.remove('text-slate-400');
+            }
+
+            if (tabName === 'admin' && isAdminLoggedIn) {
+                renderAdminAdsList();
+                renderAdminVideosList();
+            }
+        }
+
+        // ==================== ACTUALITÉS & CHAPEAUX ====================
+        function setNewsCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-pill').forEach(pill => {
+                if (pill.textContent.trim() === cat) {
+                    pill.classList.add('bg-logos-yellow', 'text-logos-blue', 'font-bold');
+                    pill.classList.remove('bg-logos-cardBg', 'text-slate-300', 'border', 'border-white/10');
+                } else {
+                    pill.classList.remove('bg-logos-yellow', 'text-logos-blue', 'font-bold');
+                    pill.classList.add('bg-logos-cardBg', 'text-slate-300', 'border', 'border-white/10');
+                }
+            });
+            renderNewsList();
+        }
+
+        function renderNewsList() {
+            const container = document.getElementById('news-grid-container');
+            const query = (document.getElementById('news-search-input')?.value || '').toLowerCase().trim();
+
+            const filtered = appState.videos.filter(v => {
+                const matchCat = currentCategory === 'Toutes' || v.category === currentCategory;
+                const matchQuery = v.title.toLowerCase().includes(query) || v.chapeau.toLowerCase().includes(query);
+                return matchCat && matchQuery;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full bg-logos-cardBg rounded-2xl p-8 text-center border border-white/10">
+                        <i class="fa-solid fa-video-slash text-3xl text-slate-500 mb-2"></i>
+                        <p class="text-sm font-bold text-slate-300">Aucune vidéo d'actualité trouvée.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(video => {
+                const resolvedThumb = video.thumbnail || getAutoThumbnailFromUrl(video.url);
+                const isDirectMp4 = !resolvedThumb && video.url && !extractYouTubeId(video.url);
+
+                return `
+                <article class="bg-logos-cardBg rounded-2xl overflow-hidden border border-white/10 hover:border-logos-yellow/50 transition flex flex-col justify-between shadow-lg group">
+                    <div>
+                        <div onclick="openVideoDetailModal('${video.id}')" class="relative aspect-video bg-slate-900 overflow-hidden cursor-pointer">
+                            ${isDirectMp4 ? `
+                                <video src="${video.url}#t=1.5" muted playsinline preload="metadata" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 pointer-events-none"></video>
+                            ` : `
+                                <img src="${resolvedThumb || 'https://placehold.co/800x450/001E7A/F4CA00?text=LOGOS+TV'}" 
+                                     onerror="this.src='https://placehold.co/800x450/001E7A/F4CA00?text=LOGOS+TV'" 
+                                     alt="${video.title}" 
+                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            `}
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                            <span class="absolute top-3 left-3 bg-logos-yellow text-logos-blue text-[10px] font-black uppercase px-2.5 py-1 rounded-full shadow">
+                                ${video.category}
+                            </span>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-12 h-12 rounded-full bg-logos-yellow/95 text-logos-blue flex items-center justify-center text-lg shadow-xl group-hover:scale-110 transition">
+                                    <i class="fa-solid fa-play ml-0.5"></i>
+                                </div>
+                            </div>
+                            <span class="absolute bottom-2.5 right-3 text-[11px] text-slate-200 font-medium">
+                                <i class="fa-regular fa-clock mr-1"></i>${video.date}
+                            </span>
+                        </div>
+
+                        <div class="p-4 space-y-2.5">
+                            <h3 onclick="openVideoDetailModal('${video.id}')" class="text-base font-extrabold text-white group-hover:text-logos-yellow transition cursor-pointer leading-snug">
+                                ${video.title}
+                            </h3>
+                            <div class="bg-white/5 border-l-2 border-logos-yellow pl-3 py-1.5 rounded-r-lg">
+                                <p class="text-xs text-slate-300 leading-relaxed line-clamp-3">
+                                    ${video.chapeau}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-4 pb-4 pt-1 flex items-center justify-between gap-2">
+                        <button type="button" onclick="openVideoDetailModal('${video.id}')" class="text-xs font-extrabold text-logos-yellow hover:underline flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-play"></i> Regarder la vidéo
+                        </button>
+
+                        ${isAdminLoggedIn ? `
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" onclick="openAdminVideoModal('${video.id}')" class="p-2 rounded-lg bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 text-xs" title="Modifier">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button type="button" onclick="deleteAdminVideo('${video.id}')" class="p-2 rounded-lg bg-red-500/20 text-red-300 hover:bg-red-500/30 text-xs" title="Supprimer">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </article>
+            `;}).join('');
+        }
+
+        function renderLivePreviewNews() {
+            const container = document.getElementById('live-preview-news-grid');
+            const latest = appState.videos.slice(0, 2);
+            container.innerHTML = latest.map(video => {
+                const resolvedThumb = video.thumbnail || getAutoThumbnailFromUrl(video.url);
+                const isDirectMp4 = !resolvedThumb && video.url && !extractYouTubeId(video.url);
+
+                return `
+                <div onclick="openVideoDetailModal('${video.id}')" class="bg-logos-cardBg hover:bg-white/5 border border-white/10 rounded-2xl p-3 flex gap-3.5 cursor-pointer transition group">
+                    <div class="relative w-28 sm:w-32 aspect-video rounded-xl overflow-hidden flex-shrink-0 bg-slate-900">
+                        ${isDirectMp4 ? `
+                            <video src="${video.url}#t=1.5" muted playsinline preload="metadata" class="w-full h-full object-cover pointer-events-none"></video>
+                        ` : `
+                            <img src="${resolvedThumb || 'https://placehold.co/400x225/001E7A/F4CA00?text=LOGOS+TV'}" 
+                                 onerror="this.src='https://placehold.co/400x225/001E7A/F4CA00?text=LOGOS+TV'" 
+                                 class="w-full h-full object-cover">
+                        `}
+                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                            <i class="fa-solid fa-play text-logos-yellow text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <span class="text-[10px] font-black uppercase text-logos-yellow">${video.category}</span>
+                        <h4 class="text-xs sm:text-sm font-bold text-white group-hover:text-logos-yellow transition line-clamp-2 mt-0.5">${video.title}</h4>
+                        <p class="text-[11px] text-slate-400 line-clamp-1 mt-1">${video.chapeau}</p>
+                    </div>
+                </div>
+            `;}).join('');
+        }
+
+        // ==================== MODALE DE VISIONNAGE VIDÉO ====================
+        function openVideoDetailModal(videoId) {
+            const video = appState.videos.find(v => v.id === videoId);
+            if (!video) return;
+
+            currentOpenedVideo = video;
+            document.getElementById('modal-video-category').textContent = video.category;
+            document.getElementById('modal-video-date').textContent = video.date;
+            document.getElementById('modal-video-title').textContent = video.title;
+            document.getElementById('modal-video-chapeau').textContent = video.chapeau;
+
+            const playerBox = document.getElementById('modal-video-player');
+            const ytId = extractYouTubeId(video.url);
+
+            if (ytId) {
+                playerBox.innerHTML = `
+                    <iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen></iframe>
+                `;
+            } else {
+                playerBox.innerHTML = `<video src="${video.url}" controls autoplay playsinline></video>`;
+            }
+
+            document.getElementById('video-detail-modal').classList.remove('hidden');
+        }
+
+        function closeVideoDetailModal() {
+            document.getElementById('video-detail-modal').classList.add('hidden');
+            document.getElementById('modal-video-player').innerHTML = '';
+            currentOpenedVideo = null;
+        }
+
+        function shareCurrentModalVideo() {
+            if (!currentOpenedVideo) return;
+            shareContent(`${currentOpenedVideo.title} — Regardez sur LOGOS TÉLÉVISION Likasi`);
+        }
+
+        // ==================== SYSTÈME ADMINISTRATEUR ====================
+        function handleAdminAccess() {
+            if (isAdminLoggedIn) {
+                switchTab('admin');
+            } else {
+                document.getElementById('admin-pin-input').value = '';
+                document.getElementById('admin-login-modal').classList.remove('hidden');
+                setTimeout(() => document.getElementById('admin-pin-input').focus(), 100);
+            }
+        }
+
+        function closeAdminLoginModal() {
+            document.getElementById('admin-login-modal').classList.add('hidden');
+        }
+
+        function submitAdminLogin(e) {
+            e.preventDefault();
+            const enteredPin = document.getElementById('admin-pin-input').value.trim();
+            if (enteredPin === appState.adminPin) {
+                isAdminLoggedIn = true;
+                saveAdminSessionState({ isAdminLoggedIn: true });
+                closeAdminLoginModal();
+                updateAdminUIState();
+                switchTab('admin');
+                showToast('Bienvenue dans la régie Administrateur');
+            } else {
+                showToast('Code PIN incorrect. Veuillez réessayer.', true);
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            safeRemoveItem(SESSION_KEY);
+            updateAdminUIState();
+            switchTab('live');
+            showToast('Vous êtes déconnecté du mode Administrateur');
+        }
+
+        function updateAdminUIState() {
+            const badge = document.getElementById('admin-active-badge');
+            const lockIcon = document.getElementById('admin-lock-icon');
+            const btnLabel = document.getElementById('admin-btn-label');
+            const mobLabel = document.getElementById('mob-admin-label');
+            const newsAddBtn = document.getElementById('news-admin-add-btn');
+            const liveAdBtn = document.getElementById('live-admin-ad-btn');
+
+            if (isAdminLoggedIn) {
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+                lockIcon.className = 'fa-solid fa-sliders text-logos-yellow';
+                btnLabel.textContent = 'Régie TV';
+                mobLabel.textContent = 'Régie';
+                newsAddBtn.classList.remove('hidden');
+                newsAddBtn.classList.add('flex');
+                liveAdBtn.classList.remove('hidden');
+                liveAdBtn.classList.add('flex');
+            } else {
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+                lockIcon.className = 'fa-solid fa-lock';
+                btnLabel.textContent = 'Espace Admin';
+                mobLabel.textContent = 'Admin';
+                newsAddBtn.classList.add('hidden');
+                newsAddBtn.classList.remove('flex');
+                liveAdBtn.classList.add('hidden');
+                liveAdBtn.classList.remove('flex');
+            }
+            renderNewsList();
+        }
+
+        function switchAdminSubTab(subName) {
+            currentAdminSubTab = subName;
+            saveAdminSessionState();
+
+            document.querySelectorAll('.admin-sub-panel').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.admin-sub-btn').forEach(b => {
+                b.classList.remove('bg-logos-yellow', 'text-logos-blue', 'font-bold');
+                b.classList.add('bg-logos-cardBg', 'text-slate-300', 'font-semibold');
+            });
+
+            const activeBtn = document.getElementById(`subtab-btn-${subName}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-logos-yellow', 'text-logos-blue', 'font-bold');
+                activeBtn.classList.remove('bg-logos-cardBg', 'text-slate-300', 'font-semibold');
+            }
+
+            if (subName === 'stream') document.getElementById('admin-stream-form').classList.remove('hidden');
+            if (subName === 'ads') {
+                document.getElementById('admin-ads-panel').classList.remove('hidden');
+                renderAdminAdsList();
+            }
+            if (subName === 'videos') {
+                document.getElementById('admin-videos-panel').classList.remove('hidden');
+                renderAdminVideosList();
+            }
+            if (subName === 'socials') document.getElementById('admin-socials-form').classList.remove('hidden');
+            if (subName === 'security') document.getElementById('admin-security-form').classList.remove('hidden');
+        }
+
+        // Gestion du Logo personnalisé
+        function handleLogoFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('cfg-logo-url').value = e.target.result;
+                appState.settings.logoUrl = e.target.result;
+                persistAppState();
+                applySettingsToUI();
+                showToast('Nouveau logo chargé avec succès');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetDefaultLogo() {
+            if (!isAdminLoggedIn) return;
+            document.getElementById('cfg-logo-url').value = '';
+            appState.settings.logoUrl = '';
+            persistAppState();
+            applySettingsToUI();
+            showToast('Logo original LOGOS TÉLÉVISION restauré');
+        }
+
+        // Sauvegarde Direct TV & Logo
+        function saveStreamSettings(e) {
+            e.preventDefault();
+            if (!isAdminLoggedIn) return;
+
+            const oldUrl = appState.settings.streamUrl;
+            appState.settings.logoUrl = document.getElementById('cfg-logo-url').value.trim();
+            appState.settings.channelName = document.getElementById('cfg-channel-name').value.trim();
+            appState.settings.slogan = document.getElementById('cfg-slogan').value.trim();
+            appState.settings.streamUrl = document.getElementById('cfg-stream-url').value.trim();
+            appState.settings.programTitle = document.getElementById('cfg-program-title').value.trim();
+            appState.settings.programDesc = document.getElementById('cfg-program-desc').value.trim();
+            appState.settings.ticker = document.getElementById('cfg-ticker').value.trim();
+
+            persistAppState();
+            applySettingsToUI();
+            if (oldUrl !== appState.settings.streamUrl) {
+                initLivePlayer(appState.settings.streamUrl);
+            }
+            showToast('Paramètres du Direct & Logo enregistrés');
+        }
+
+        // CRUD Bannières Publicitaires
+        function renderAdminAdsList() {
+            const list = document.getElementById('admin-ads-list');
+            const ads = appState.ads || [];
+            if (ads.length === 0) {
+                list.innerHTML = `<p class="text-xs text-slate-400 bg-logos-cardBg p-4 rounded-xl border border-white/10">Aucune bannière publicitaire enregistrée.</p>`;
+                return;
+            }
+            list.innerHTML = ads.map(ad => `
+                <div class="bg-logos-cardBg p-3.5 rounded-2xl border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-start gap-3">
+                        <img src="${ad.image}" onerror="this.src='https://placehold.co/200x100/001E7A/F4CA00?text=PUB'" class="w-28 h-16 object-cover rounded-lg flex-shrink-0 border border-white/10">
+                        <div>
+                            <h4 class="text-sm font-bold text-white">${ad.title}</h4>
+                            <p class="text-xs text-slate-400 line-clamp-1 mt-0.5">${ad.subtitle}</p>
+                            <span class="text-[10px] text-logos-yellow font-semibold">${ad.link || 'Sans lien externe'}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
+                        <button type="button" onclick="openAdminAdModal('${ad.id}')" class="px-3 py-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 text-xs font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-pen"></i> Modifier
+                        </button>
+                        <button type="button" onclick="deleteAdminAd('${ad.id}')" class="px-3 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-trash"></i> Supprimer
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openAdminAdModal(adId = null, skipDraftSave = false) {
+            if (!isAdminLoggedIn) return;
+            const modal = document.getElementById('admin-ad-form-modal');
+            const titleEl = document.getElementById('ad-form-modal-title');
+
+            if (adId) {
+                const ad = appState.ads.find(a => a.id === adId);
+                if (!ad) return;
+                titleEl.innerHTML = '<i class="fa-solid fa-pen"></i> Modifier la bannière publicitaire';
+                document.getElementById('ad-edit-id').value = ad.id;
+                document.getElementById('ad-title').value = ad.title;
+                document.getElementById('ad-subtitle').value = ad.subtitle;
+                document.getElementById('ad-image').value = ad.image;
+                document.getElementById('ad-link').value = ad.link || '';
+                document.getElementById('ad-cta').value = ad.cta || "Découvrir l'offre";
+            } else {
+                titleEl.innerHTML = '<i class="fa-solid fa-plus-circle"></i> Nouvelle bannière publicitaire';
+                document.getElementById('ad-edit-id').value = '';
+                document.getElementById('ad-title').value = '';
+                document.getElementById('ad-subtitle').value = '';
+                document.getElementById('ad-image').value = '';
+                document.getElementById('ad-link').value = '';
+                document.getElementById('ad-cta').value = "Découvrir l'offre";
+            }
+            modal.classList.remove('hidden');
+            if (!skipDraftSave) saveAdminDrafts();
+        }
+
+        function closeAdminAdModal() {
+            document.getElementById('admin-ad-form-modal').classList.add('hidden');
+            saveAdminSessionState({ openModal: null, adDraft: null });
+        }
+
+        function handleAdImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('ad-image').value = e.target.result;
+                saveAdminDrafts();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveAdminAd(e) {
+            e.preventDefault();
+            if (!isAdminLoggedIn) return;
+
+            const editId = document.getElementById('ad-edit-id').value;
+            const adData = {
+                id: editId || 'ad-' + Date.now(),
+                title: document.getElementById('ad-title').value.trim(),
+                subtitle: document.getElementById('ad-subtitle').value.trim(),
+                image: document.getElementById('ad-image').value.trim(),
+                link: document.getElementById('ad-link').value.trim(),
+                cta: document.getElementById('ad-cta').value.trim() || "Découvrir l'offre"
+            };
+
+            if (!appState.ads) appState.ads = [];
+            if (editId) {
+                const idx = appState.ads.findIndex(a => a.id === editId);
+                if (idx !== -1) appState.ads[idx] = adData;
+                showToast('Bannière publicitaire modifiée');
+            } else {
+                appState.ads.unshift(adData);
+                currentAdIndex = 0;
+                showToast('Nouvelle bannière publicitaire publiée');
+            }
+
+            persistAppState();
+            renderAdBanner();
+            renderAdminAdsList();
+            closeAdminAdModal();
+        }
+
+        function deleteAdminAd(adId) {
+            if (!isAdminLoggedIn) return;
+            appState.ads = appState.ads.filter(a => a.id !== adId);
+            persistAppState();
+            renderAdBanner();
+            renderAdminAdsList();
+            showToast('Bannière publicitaire supprimée');
+        }
+
+        // Sauvegarde Contacts & Réseaux Sociaux
+        function saveContactSettings(e) {
+            e.preventDefault();
+            if (!isAdminLoggedIn) return;
+
+            appState.settings.phone = document.getElementById('cfg-phone').value.trim();
+            appState.settings.address = document.getElementById('cfg-address').value.trim();
+            appState.settings.socials.youtube = document.getElementById('cfg-youtube').value.trim();
+            appState.settings.socials.facebook = document.getElementById('cfg-facebook').value.trim();
+            appState.settings.socials.tiktok = document.getElementById('cfg-tiktok').value.trim();
+            appState.settings.socials.x = document.getElementById('cfg-x').value.trim();
+            appState.settings.socials.instagram = document.getElementById('cfg-instagram').value.trim();
+
+            persistAppState();
+            applySettingsToUI();
+            showToast('Coordonnées et réseaux sociaux mis à jour');
+        }
+
+        // CRUD Vidéos d'Actualité (Admin uniquement)
+        function renderAdminVideosList() {
+            const list = document.getElementById('admin-videos-list');
+            list.innerHTML = appState.videos.map(v => {
+                const resolvedThumb = v.thumbnail || getAutoThumbnailFromUrl(v.url);
+                return `
+                <div class="bg-logos-cardBg p-3.5 rounded-2xl border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-start gap-3">
+                        <img src="${resolvedThumb || 'https://placehold.co/200x120/001E7A/F4CA00?text=TV'}" onerror="this.src='https://placehold.co/200x120/001E7A/F4CA00?text=TV'" class="w-24 aspect-video object-cover rounded-lg flex-shrink-0">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-black uppercase bg-logos-yellow text-logos-blue px-2 py-0.5 rounded">${v.category}</span>
+                                <span class="text-[11px] text-slate-400">${v.date}</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-white mt-1">${v.title}</h4>
+                            <p class="text-xs text-slate-400 line-clamp-2 mt-0.5"><strong class="text-logos-yellow">Chapeau :</strong> ${v.chapeau}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
+                        <button type="button" onclick="openAdminVideoModal('${v.id}')" class="px-3 py-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 text-xs font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-pen"></i> Modifier
+                        </button>
+                        <button type="button" onclick="deleteAdminVideo('${v.id}')" class="px-3 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-trash"></i> Supprimer
+                        </button>
+                    </div>
+                </div>
+            `;}).join('');
+        }
+
+        function openAdminVideoModal(videoId = null, skipDraftSave = false) {
+            if (!isAdminLoggedIn) return;
+            const modal = document.getElementById('admin-video-form-modal');
+            const titleEl = document.getElementById('video-form-modal-title');
+
+            if (videoId) {
+                const v = appState.videos.find(item => item.id === videoId);
+                if (!v) return;
+                titleEl.innerHTML = '<i class="fa-solid fa-pen"></i> Modifier la vidéo';
+                document.getElementById('vid-edit-id').value = v.id;
+                document.getElementById('vid-title').value = v.title;
+                document.getElementById('vid-category').value = v.category;
+                document.getElementById('vid-date').value = v.date;
+                document.getElementById('vid-url').value = v.url;
+                const autoThumb = v.thumbnail || getAutoThumbnailFromUrl(v.url);
+                document.getElementById('vid-thumb').value = autoThumb;
+                updateThumbPreview(autoThumb);
+                document.getElementById('vid-chapeau').value = v.chapeau;
+            } else {
+                titleEl.innerHTML = '<i class="fa-solid fa-plus-circle"></i> Publier une nouvelle vidéo';
+                document.getElementById('vid-edit-id').value = '';
+                document.getElementById('vid-title').value = '';
+                document.getElementById('vid-category').value = 'Likasi Info';
+                document.getElementById('vid-date').value = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+                document.getElementById('vid-url').value = '';
+                document.getElementById('vid-thumb').value = '';
+                updateThumbPreview('');
+                document.getElementById('vid-chapeau').value = '';
+            }
+            modal.classList.remove('hidden');
+            if (!skipDraftSave) saveAdminDrafts();
+        }
+
+        function closeAdminVideoModal() {
+            document.getElementById('admin-video-form-modal').classList.add('hidden');
+            saveAdminSessionState({ openModal: null, videoDraft: null });
+        }
+
+        function saveAdminVideo(e) {
+            e.preventDefault();
+            if (!isAdminLoggedIn) return;
+
+            const editId = document.getElementById('vid-edit-id').value;
+            const videoUrl = document.getElementById('vid-url').value.trim();
+            const manualOrAutoThumb = document.getElementById('vid-thumb').value.trim() || getAutoThumbnailFromUrl(videoUrl);
+
+            const videoData = {
+                id: editId || 'vid-' + Date.now(),
+                title: document.getElementById('vid-title').value.trim(),
+                category: document.getElementById('vid-category').value,
+                date: document.getElementById('vid-date').value.trim(),
+                url: videoUrl,
+                thumbnail: manualOrAutoThumb,
+                chapeau: document.getElementById('vid-chapeau').value.trim()
+            };
+
+            if (editId) {
+                const idx = appState.videos.findIndex(v => v.id === editId);
+                if (idx !== -1) appState.videos[idx] = videoData;
+                showToast('Vidéo et chapeau modifiés avec succès');
+            } else {
+                appState.videos.unshift(videoData);
+                showToast('Nouvelle vidéo d’actualité publiée');
+            }
+
+            persistAppState();
+            renderNewsList();
+            renderLivePreviewNews();
+            renderAdminVideosList();
+            closeAdminVideoModal();
+        }
+
+        function deleteAdminVideo(videoId) {
+            if (!isAdminLoggedIn) return;
+            appState.videos = appState.videos.filter(v => v.id !== videoId);
+            persistAppState();
+            renderNewsList();
+            renderLivePreviewNews();
+            renderAdminVideosList();
+            showToast('Vidéo supprimée des actualités');
+        }
+
+        // Sécurité PIN & Réinitialisation
+        function updateAdminPin(e) {
+            e.preventDefault();
+            if (!isAdminLoggedIn) return;
+            const newPin = document.getElementById('cfg-new-pin').value.trim();
+            if (newPin.length < 4) return;
+            appState.adminPin = newPin;
+            persistAppState();
+            document.getElementById('cfg-new-pin').value = '';
+            showToast('Nouveau Code PIN Administrateur enregistré');
+        }
+
+        function resetAllDefaults() {
+            if (!isAdminLoggedIn) return;
+            appState = JSON.parse(JSON.stringify(DEFAULT_DATA));
+            persistAppState();
+            applySettingsToUI();
+            initLivePlayer(appState.settings.streamUrl);
+            renderAdBanner();
+            renderNewsList();
+            renderLivePreviewNews();
+            renderAdminAdsList();
+            renderAdminVideosList();
+            showToast('Application réinitialisée aux paramètres d’origine');
+        }
+
+        // ==================== UTILITAIRES (PARTAGE & TOAST) ====================
+        function shareContent(text) {
+            const shareText = `${text} — ${window.location.href}`;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'LOGOS TÉLÉVISION — Votre plaisir',
+                    text: text,
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                const tempInput = document.createElement('textarea');
+                tempInput.value = shareText;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                showToast('Lien copié dans le presse-papiers !');
+            }
+        }
+
+        let toastTimeout = null;
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast-notification');
+            const msgEl = document.getElementById('toast-message');
+            const iconEl = document.getElementById('toast-icon');
+
+            msgEl.textContent = message;
+            iconEl.className = isError
+                ? 'fa-solid fa-triangle-exclamation text-red-400 text-base'
+                : 'fa-solid fa-circle-check text-logos-yellow text-base';
+
+            toast.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
