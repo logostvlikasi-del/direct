@@ -101,6 +101,15 @@
             background: #000;
         }
 
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(244, 202, 0, 0.35); }
+            50% { box-shadow: 0 0 18px 2px rgba(244, 202, 0, 0.18); }
+        }
+        .logos-glow {
+            animation: pulseGlow 3s infinite;
+        }
+
         .glass-nav {
             background: rgba(6, 13, 38, 0.92);
             backdrop-filter: blur(14px);
@@ -646,6 +655,20 @@
                         Réinitialiser les données d'usine
                     </button>
                 </div>
+
+                <div class="pt-4 mt-4 border-t border-white/10 space-y-3">
+                    <h4 class="text-xs font-extrabold uppercase tracking-wider text-logos-yellow">Sauvegarde de sécurité (JSON)</h4>
+                    <p class="text-[11px] text-slate-400">Exportez une copie complète de vos vidéos, pubs et réglages ou restaurez un fichier de sauvegarde à tout moment.</p>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button type="button" onclick="exportStateBackupJson()" class="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-400/40 font-bold text-xs flex items-center gap-2">
+                            <i class="fa-solid fa-download"></i> Exporter sauvegarde (.json)
+                        </button>
+                        <label class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 font-bold text-xs flex items-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-upload"></i> Importer sauvegarde (.json)
+                            <input type="file" accept="application/json,.json" onchange="importStateBackupJson(event)" class="hidden">
+                        </label>
+                    </div>
+                </div>
             </form>
         </section>
     </main>
@@ -1045,7 +1068,7 @@
             try {
                 const raw = safeGetItem(STORAGE_KEY);
                 if (raw) {
-                    return mergeWithDefaults(JSON.parse(raw));
+                    return preserveExistingState(JSON.parse(raw), DEFAULT_DATA);
                 }
             } catch (e) {
                 console.warn('Lecture stockage local impossible:', e);
@@ -1075,7 +1098,7 @@
                     const cloudPayload = row[supabaseColumnName];
                     if (cloudPayload && typeof cloudPayload === 'object' && Object.keys(cloudPayload).length > 0) {
                         const prevStream = appState.settings.streamUrl;
-                        appState = mergeWithDefaults(cloudPayload);
+                        appState = preserveExistingState(cloudPayload, appState);
                         safeSetItem(STORAGE_KEY, JSON.stringify(appState));
                         applyChannelSettingsToUI();
                         renderAdBannerCarousel();
@@ -1105,14 +1128,82 @@
             }
         }
 
+        // Préserve l'intégralité des données enregistrées localement (localStorage) et les fusionne sans perte
+        function preserveExistingState(incoming, existing) {
+            const base = existing || JSON.parse(JSON.stringify(DEFAULT_DATA));
+            if (!incoming || typeof incoming !== 'object') return base;
+
+            const mergedVideos = Array.isArray(incoming.videos) && incoming.videos.length > 0
+                ? incoming.videos
+                : (Array.isArray(base.videos) ? base.videos : []);
+
+            const mergedAds = Array.isArray(incoming.ads) && incoming.ads.length > 0
+                ? incoming.ads
+                : (Array.isArray(base.ads) ? base.ads : []);
+
+            return {
+                adminPin: incoming.adminPin || base.adminPin || DEFAULT_DATA.adminPin,
+                settings: {
+                    ...DEFAULT_DATA.settings,
+                    ...(base.settings || {}),
+                    ...(incoming.settings || {}),
+                    socials: {
+                        ...DEFAULT_DATA.settings.socials,
+                        ...((base.settings && base.settings.socials) || {}),
+                        ...((incoming.settings && incoming.settings.socials) || {})
+                    }
+                },
+                ads: mergedAds,
+                videos: mergedVideos
+            };
+        }
+
+        function sanitizeStateForCloud(rawState) {
+            const clean = preserveExistingState(rawState, appState);
+            const isInlineDataOrBlob = (val) => typeof val === 'string' && (val.startsWith('data:') || val.startsWith('blob:'));
+
+            if (isInlineDataOrBlob(clean.settings.logoUrl)) clean.settings.logoUrl = '';
+            if (isInlineDataOrBlob(clean.settings.streamUrl)) clean.settings.streamUrl = DEFAULT_DATA.settings.streamUrl;
+            if (isInlineDataOrBlob(clean.settings.backupStreamUrl)) clean.settings.backupStreamUrl = '';
+            if (isInlineDataOrBlob(clean.settings.fallbackVideoUrl)) clean.settings.fallbackVideoUrl = DEFAULT_DATA.settings.fallbackVideoUrl;
+
+            clean.ads = (clean.ads || []).map(ad => ({
+                id: ad.id,
+                title: String(ad.title || ''),
+                subtitle: String(ad.subtitle || ''),
+                image: isInlineDataOrBlob(ad.image) ? 'https://placehold.co/900x320/001E7A/F4CA00?text=LOGOS+TV+PUBLICITE' : String(ad.image || ''),
+                link: isInlineDataOrBlob(ad.link) ? '#' : String(ad.link || '#'),
+                cta: String(ad.cta || 'Découvrir')
+            }));
+
+            clean.videos = (clean.videos || []).map(v => {
+                const safeUrl = isInlineDataOrBlob(v.url) ? '' : String(v.url || '');
+                const ytId = extractYouTubeId(safeUrl);
+                const defaultThumb = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : 'https://placehold.co/640x360/001E7A/F4CA00?text=LOGOS+TELEVISION';
+                const safeThumb = isInlineDataOrBlob(v.thumbnail) ? defaultThumb : (String(v.thumbnail || '').trim() || defaultThumb);
+                return {
+                    id: v.id,
+                    title: String(v.title || ''),
+                    category: String(v.category || 'Likasi Info'),
+                    date: String(v.date || ''),
+                    url: safeUrl,
+                    thumbnail: safeThumb,
+                    chapeau: String(v.chapeau || '')
+                };
+            });
+
+            return clean;
+        }
+
         async function pushStateToSupabase() {
             if (!supabaseClient) {
                 showToast('Sauvegardé localement (client Supabase non chargé).', true);
                 return;
             }
             try {
+                const cloudSafeState = sanitizeStateForCloud(appState);
                 const payloadObj = {};
-                payloadObj[supabaseColumnName] = appState;
+                payloadObj[supabaseColumnName] = cloudSafeState;
 
                 const { data: updatedRows, error: updateErr } = await supabaseClient
                     .from('app_config')
@@ -1122,7 +1213,11 @@
 
                 if (updateErr) {
                     console.error('Erreur update Supabase:', updateErr);
-                    showToast(`Erreur cloud (${SUPABASE_PROJECT_NAME}) : ${updateErr.message}`, true);
+                    if (updateErr.message && updateErr.message.includes('2704')) {
+                        showToast(`Limite d'index Supabase (2704 octets) atteinte : supprimez une ancienne vidéo ou réduisez le texte.`, true);
+                    } else {
+                        showToast(`Erreur cloud (${SUPABASE_PROJECT_NAME}) : ${updateErr.message}`, true);
+                    }
                     return;
                 }
 
@@ -1144,9 +1239,64 @@
         }
 
         function persistAppState() {
-            safeSetItem(STORAGE_KEY, JSON.stringify(appState));
+            const serialized = JSON.stringify(appState);
+            safeSetItem(STORAGE_KEY, serialized);
+            safeSetItem(BACKUP_MIRROR_KEY, serialized);
             pushStateToSupabase();
         }
+        const BACKUP_MIRROR_KEY = 'logos_tv_likasi_backup_mirror_v4';
+
+        function exportStateBackupJson() {
+            try {
+                const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `logos-tv-likasi-sauvegarde-${new Date().toISOString().slice(0, 10)}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                showToast('Sauvegarde JSON téléchargée avec succès !');
+            } catch (e) {
+                showToast('Impossible de générer le fichier de sauvegarde.', true);
+            }
+        }
+
+        function importStateBackupJson(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    const parsed = JSON.parse(ev.target.result);
+                    appState = preserveExistingState(parsed, appState);
+                    safeSetItem(STORAGE_KEY, JSON.stringify(appState));
+                    safeSetItem(BACKUP_MIRROR_KEY, JSON.stringify(appState));
+                    pushStateToSupabase();
+                    applyChannelSettingsToUI();
+                    renderAdBannerCarousel();
+                    renderNewsList();
+                    renderAdminLists();
+                    initLivePlayer(appState.settings.streamUrl);
+                    showToast('Sauvegarde JSON restaurée et synchronisée !');
+                } catch (err) {
+                    showToast('Fichier JSON invalide ou corrompu.', true);
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        }
+
+        document.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Escape') {
+                closeVideoDetailModal();
+                closeAdminLoginModal();
+                closeAdminVideoModal();
+                closeAdminAdModal();
+            }
+        });
+
 
         // ==================== INITIALISATION AU CHARGEMENT ====================
         window.addEventListener('DOMContentLoaded', async () => {
@@ -1171,7 +1321,7 @@
                         const cloudData = newRow[supabaseColumnName] || newRow.data || newRow['données'];
                         if (cloudData && Object.keys(cloudData).length > 0) {
                             const prevStream = appState.settings.streamUrl;
-                            appState = mergeWithDefaults(cloudData);
+                            appState = preserveExistingState(cloudData, appState);
                             safeSetItem(STORAGE_KEY, JSON.stringify(appState));
                             applyChannelSettingsToUI();
                             renderAdBannerCarousel();
@@ -1227,7 +1377,10 @@
 
         // ==================== RENDU LOGO & IDENTITÉ CHAÎNE ====================
         function getLogoMarkup() {
-            const url = (appState.settings.logoUrl || '').trim();
+            const params = new URLSearchParams(window.location.search || '');
+            const queryLogo = (params.get('logo') || '').trim();
+            const dedicatedLogo = (safeGetItem('logos_tv_custom_logo') || '').trim();
+            const url = queryLogo || (appState.settings.logoUrl || '').trim() || dedicatedLogo;
             if (url) {
                 return `<img src="${escapeHtml(url)}" alt="${escapeHtml(appState.settings.channelName)}" class="w-full h-auto max-h-14 object-contain rounded-lg" onerror="this.outerHTML=\`${DEFAULT_LOGO_SVG.replace(/"/g, '&quot;')}\`">`;
             }
