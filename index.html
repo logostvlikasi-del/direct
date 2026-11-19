@@ -992,8 +992,10 @@
             ]
         };
 
-        // ==================== CONFIGURATION SUPABASE (TEMPS RÉEL) ====================
-        const SUPABASE_URL = 'https://hrnxcvptrmzcfspmcmad.supabase.co';
+        // ==================== CONFIGURATION SUPABASE (PROJET : Logos live) ====================
+        const SUPABASE_PROJECT_NAME = 'Logos live';
+        const SUPABASE_PROJECT_ID = 'hrnxcvptrmzcfspmcmad';
+        const SUPABASE_URL = `https://${SUPABASE_PROJECT_ID}.supabase.co`;
         const SUPABASE_ANON_KEY = 'sb_publishable_NRUrWoZh37vAD9TPirtfMw_mWQQUVX7';
         const SUPABASE_ROW_ID = 2;
         const supabaseClient = (typeof window.supabase !== 'undefined')
@@ -1104,20 +1106,40 @@
         }
 
         async function pushStateToSupabase() {
-            if (!supabaseClient) return;
+            if (!supabaseClient) {
+                showToast('Sauvegardé localement (client Supabase non chargé).', true);
+                return;
+            }
             try {
-                const upsertObj = { id: SUPABASE_ROW_ID };
-                upsertObj[supabaseColumnName] = appState;
-                const { error } = await supabaseClient
-                    .from('app_config')
-                    .upsert([upsertObj], { onConflict: 'id' });
+                const payloadObj = {};
+                payloadObj[supabaseColumnName] = appState;
 
-                if (error) {
-                    console.error('Erreur sauvegarde Supabase:', error.message);
-                    showToast('Sauvegardé localement (erreur réseau cloud).', true);
+                const { data: updatedRows, error: updateErr } = await supabaseClient
+                    .from('app_config')
+                    .update(payloadObj)
+                    .eq('id', SUPABASE_ROW_ID)
+                    .select('id');
+
+                if (updateErr) {
+                    console.error('Erreur update Supabase:', updateErr);
+                    showToast(`Erreur cloud (${SUPABASE_PROJECT_NAME}) : ${updateErr.message}`, true);
+                    return;
+                }
+
+                if (!updatedRows || updatedRows.length === 0) {
+                    const insertObj = { id: SUPABASE_ROW_ID, ...payloadObj };
+                    const { error: insertErr } = await supabaseClient
+                        .from('app_config')
+                        .insert([insertObj]);
+
+                    if (insertErr) {
+                        console.error('Erreur insert Supabase:', insertErr);
+                        showToast(`Erreur cloud (${SUPABASE_PROJECT_NAME}) : ${insertErr.message}`, true);
+                    }
                 }
             } catch (e) {
                 console.error('Exception sauvegarde Supabase:', e);
+                showToast(`Sauvegardé localement (connexion ${SUPABASE_PROJECT_NAME} impossible).`, true);
             }
         }
 
