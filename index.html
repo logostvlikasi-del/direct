@@ -140,9 +140,6 @@
                 <button type="button" onclick="switchTab('live')" id="desk-nav-live" class="desk-nav-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-logos-yellow text-logos-blue">
                     <span class="w-2 h-2 rounded-full bg-red-600 animate-ping"></span> Direct TV
                 </button>
-                <button type="button" onclick="switchTab('news')" id="desk-nav-news" class="desk-nav-btn px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-2">
-                    <i class="fa-solid fa-newspaper"></i> Actualités
-                </button>
                 <button type="button" onclick="switchTab('contact')" id="desk-nav-contact" class="desk-nav-btn px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-2">
                     <i class="fa-solid fa-address-book"></i> Contact & Réseaux
                 </button>
@@ -283,53 +280,6 @@
                 <div id="ad-banner-dots" class="flex items-center justify-center gap-1.5 pt-1"></div>
             </div>
 
-            <!-- Aperçu des dernières vidéos d'actualité -->
-            <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-fire text-logos-yellow"></i> Dernières Vidéos d'Actualité
-                    </h2>
-                    <button type="button" onclick="switchTab('news')" class="text-xs font-bold text-logos-yellow hover:underline flex items-center gap-1">
-                        Voir toutes les vidéos <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                </div>
-                <div id="live-preview-news-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5"></div>
-            </div>
-        </section>
-
-        <!-- ==================== 2. ONGLET ACTUALITÉS & CHAPEAUX ==================== -->
-        <section id="view-news" class="tab-view hidden space-y-5">
-            
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-logos-cardBg p-4 rounded-2xl border border-white/10">
-                <div>
-                    <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-newspaper text-logos-yellow"></i> Vidéos d'Actualité & Reportages
-                    </h2>
-                    <p class="text-xs text-slate-400">Toute l'information de Likasi et du Haut-Katanga en images avec chapeau éditorial.</p>
-                </div>
-
-                <button type="button" id="news-admin-add-btn" onclick="openAdminVideoModal()" class="hidden px-4 py-2.5 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue font-extrabold text-xs items-center gap-2 shadow-lg transition">
-                    <i class="fa-solid fa-plus-circle"></i> Ajouter une vidéo
-                </button>
-            </div>
-
-            <!-- Barre de recherche & Filtres -->
-            <div class="flex flex-col sm:flex-row gap-3">
-                <div class="relative flex-1">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" id="news-search-input" oninput="renderNewsList()" placeholder="Rechercher une actualité, un sujet à Likasi..." class="w-full bg-logos-cardBg border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none focus:border-logos-yellow">
-                </div>
-                <div class="flex items-center gap-1.5 overflow-x-auto pb-1">
-                    <button type="button" onclick="setNewsCategory('Toutes')" class="cat-pill active px-3.5 py-2 rounded-xl text-xs font-bold bg-logos-yellow text-logos-blue whitespace-nowrap">Toutes</button>
-                    <button type="button" onclick="setNewsCategory('Likasi Info')" class="cat-pill px-3.5 py-2 rounded-xl text-xs font-semibold bg-logos-cardBg text-slate-300 border border-white/10 whitespace-nowrap">Likasi Info</button>
-                    <button type="button" onclick="setNewsCategory('Politique')" class="cat-pill px-3.5 py-2 rounded-xl text-xs font-semibold bg-logos-cardBg text-slate-300 border border-white/10 whitespace-nowrap">Politique</button>
-                    <button type="button" onclick="setNewsCategory('Sport')" class="cat-pill px-3.5 py-2 rounded-xl text-xs font-semibold bg-logos-cardBg text-slate-300 border border-white/10 whitespace-nowrap">Sport</button>
-                    <button type="button" onclick="setNewsCategory('Culture')" class="cat-pill px-3.5 py-2 rounded-xl text-xs font-semibold bg-logos-cardBg text-slate-300 border border-white/10 whitespace-nowrap">Culture</button>
-                </div>
-            </div>
-
-            <!-- Grille des Vidéos d'Actualité avec leur Chapeau -->
-            <div id="news-grid-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </section>
 
         <!-- ==================== 3. ONGLET CONTACT & RÉSEAUX SOCIAUX ==================== -->
@@ -434,7 +384,7 @@
                 <div>
                     <span class="text-[10px] font-black uppercase tracking-widest bg-logos-yellow text-logos-blue px-2.5 py-0.5 rounded">Accès Réservé Administrateur</span>
                     <h1 class="text-lg sm:text-xl font-extrabold text-white mt-1">Régie & Paramètres LOGOS TÉLÉVISION</h1>
-                    <p class="text-xs text-blue-200">Modifiez le logo, le flux en direct, la vidéo de secours, les bannières publicitaires, les vidéos et les contacts.</p>
+                    <p class="text-xs text-blue-200">Modifiez le logo, le flux en direct, la vidéo de secours, les bannières publicitaires et les contacts.</p>
                 </div>
                 <button type="button" onclick="logoutAdmin()" class="px-4 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-200 text-xs font-bold flex items-center gap-2 transition">
                     <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
@@ -448,9 +398,6 @@
                 </button>
                 <button type="button" onclick="switchAdminSubTab('ads')" id="subtab-btn-ads" class="admin-sub-btn px-4 py-2.5 rounded-xl text-xs font-semibold bg-logos-cardBg text-slate-300 border border-white/10 whitespace-nowrap">
                     <i class="fa-solid fa-rectangle-ad mr-1.5"></i> Bannières Pub
-                </button>
-                <button type="button" onclick="switchAdminSubTab('videos')" id="subtab-btn-videos" class="admin-sub-btn px-4 py-2.5 rounded-xl text-xs font-semibold bg-logos-cardBg text-slate-300 border border-white/10 whitespace-nowrap">
-                    <i class="fa-solid fa-film mr-1.5"></i> Vidéos & Chapeaux
                 </button>
                 <button type="button" onclick="switchAdminSubTab('socials')" id="subtab-btn-socials" class="admin-sub-btn px-4 py-2.5 rounded-xl text-xs font-semibold bg-logos-cardBg text-slate-300 border border-white/10 whitespace-nowrap">
                     <i class="fa-solid fa-address-card mr-1.5"></i> Contacts & Réseaux
@@ -575,21 +522,6 @@
                 <div id="admin-ads-list" class="space-y-3"></div>
             </div>
 
-            <!-- 3. GESTION DES VIDÉOS D'ACTUALITÉ & CHAPEAUX -->
-            <div id="admin-videos-panel" class="admin-sub-panel hidden bg-logos-cardBg p-5 rounded-2xl border border-white/10 space-y-4">
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                        <h3 class="text-base font-extrabold text-logos-yellow">Catalogue des Vidéos & Chapeaux</h3>
-                        <p class="text-xs text-slate-400">Publiez de nouvelles vidéos d'actualité avec leur chapeau éditorial.</p>
-                    </div>
-                    <button type="button" onclick="openAdminVideoModal()" class="px-4 py-2.5 rounded-xl bg-logos-yellow text-logos-blue font-extrabold text-xs flex items-center gap-2 shadow">
-                        <i class="fa-solid fa-plus"></i> Nouvelle Vidéo
-                    </button>
-                </div>
-
-                <div id="admin-videos-list" class="space-y-3"></div>
-            </div>
-
             <!-- 4. GESTION CONTACTS & RÉSEAUX SOCIAUX -->
             <form id="admin-socials-form" onsubmit="saveSocialsSettings(event)" class="admin-sub-panel hidden bg-logos-cardBg p-5 rounded-2xl border border-white/10 space-y-4">
                 <h3 class="text-base font-extrabold text-logos-yellow flex items-center gap-2">
@@ -684,11 +616,6 @@
                 <span class="text-[10px] font-extrabold mt-1">Direct TV</span>
             </button>
 
-            <button type="button" onclick="switchTab('news')" id="mob-nav-news" class="mob-nav-btn flex flex-col items-center justify-center py-1.5 px-3 rounded-xl text-slate-400 transition">
-                <i class="fa-solid fa-newspaper text-lg"></i>
-                <span class="text-[10px] font-semibold mt-1">Actualités</span>
-            </button>
-
             <button type="button" onclick="switchTab('contact')" id="mob-nav-contact" class="mob-nav-btn flex flex-col items-center justify-center py-1.5 px-3 rounded-xl text-slate-400 transition">
                 <i class="fa-solid fa-address-book text-lg"></i>
                 <span class="text-[10px] font-semibold mt-1">Contact</span>
@@ -700,39 +627,6 @@
             </button>
         </div>
     </nav>
-
-    <!-- ==================== MODALE 1 : LECTURE D'UNE VIDÉO D'ACTUALITÉ ==================== -->
-    <div id="video-detail-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-        <div class="bg-logos-cardBg border border-white/15 rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl my-auto">
-            <div class="px-4 py-3 bg-logos-blueDark flex items-center justify-between border-b border-white/10">
-                <div class="flex items-center gap-2">
-                    <span id="modal-video-category" class="bg-logos-yellow text-logos-blue text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full">Likasi Info</span>
-                    <span id="modal-video-date" class="text-xs text-slate-300">Aujourd'hui</span>
-                </div>
-                <button type="button" onclick="closeVideoDetailModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <div class="video-wrapper" id="modal-video-player"></div>
-
-            <div class="p-4 sm:p-6 space-y-3">
-                <h3 id="modal-video-title" class="text-lg sm:text-xl font-extrabold text-white leading-snug"></h3>
-                
-                <div class="bg-logos-blue/30 border-l-4 border-logos-yellow p-3.5 rounded-r-xl">
-                    <span class="text-[10px] font-black uppercase tracking-wider text-logos-yellow block mb-1">Chapeau éditorial</span>
-                    <p id="modal-video-chapeau" class="text-sm text-blue-50 font-medium leading-relaxed"></p>
-                </div>
-
-                <div class="pt-2 flex items-center justify-between border-t border-white/10">
-                    <span class="text-xs text-slate-400">Rédaction LOGOS TÉLÉVISION Likasi</span>
-                    <button type="button" onclick="shareCurrentModalVideo()" class="px-4 py-2 rounded-xl bg-logos-yellow text-logos-blue text-xs font-extrabold flex items-center gap-2">
-                        <i class="fa-solid fa-share-nodes"></i> Partager l'article
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- ==================== MODALE 2 : CONNEXION ADMINISTRATEUR ==================== -->
     <div id="admin-login-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
@@ -757,77 +651,6 @@
                 <button type="submit" class="w-full py-3 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue font-black text-xs uppercase tracking-wider shadow-lg transition">
                     Déverrouiller la Régie
                 </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- ==================== MODALE 3 : AJOUTER / MODIFIER UNE VIDÉO (ADMIN) ==================== -->
-    <div id="admin-video-form-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-        <div class="bg-logos-cardBg border border-white/15 rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-auto space-y-4">
-            <div class="flex items-center justify-between border-b border-white/10 pb-3">
-                <h3 id="video-form-modal-title" class="text-base font-extrabold text-logos-yellow flex items-center gap-2">
-                    <i class="fa-solid fa-video"></i> Ajouter une vidéo d'actualité
-                </h3>
-                <button type="button" onclick="closeAdminVideoModal()" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <form onsubmit="saveAdminVideo(event)" class="space-y-3.5">
-                <input type="hidden" id="vid-edit-id">
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Titre du reportage / vidéo *</label>
-                    <input type="text" id="vid-title" required placeholder="Ex: Inauguration d'une nouvelle infrastructure à Likasi" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Catégorie *</label>
-                        <select id="vid-category" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
-                            <option value="Likasi Info">Likasi Info</option>
-                            <option value="Politique">Politique</option>
-                            <option value="Société">Société</option>
-                            <option value="Sport">Sport</option>
-                            <option value="Culture">Culture</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Date de publication</label>
-                        <input type="text" id="vid-date" required placeholder="Ex: 17 Nov 2026" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">URL de la vidéo (YouTube, Shorts, MP4) ou fichier local *</label>
-                    <input type="text" id="vid-url" oninput="handleVideoUrlInput(this.value)" required placeholder="https://www.youtube.com/watch?v=... ou importez ci-dessous" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none mb-2">
-                    <div class="bg-logos-darkBg/70 border border-dashed border-white/20 rounded-xl p-2.5 flex flex-col gap-1.5">
-                        <span class="text-[11px] font-semibold text-logos-yellow flex items-center gap-1.5">
-                            <i class="fa-solid fa-file-video"></i> Ou importer directement une vidéo depuis votre appareil :
-                        </span>
-                        <input type="file" id="vid-file-input" accept="video/*" onchange="handleVideoFileUpload(event)" class="w-full text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-logos-yellow file:text-logos-blue cursor-pointer">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Miniature automatique (selon le lien ou la vidéo)</label>
-                    <div class="flex items-center gap-3">
-                        <img id="vid-thumb-preview" src="https://placehold.co/320x180/001E7A/F4CA00?text=APERCU+VIDEO" alt="Aperçu miniature" class="w-24 aspect-video object-cover rounded-lg border border-white/15 bg-black flex-shrink-0">
-                        <input type="text" id="vid-thumb" oninput="updateThumbPreview(this.value)" placeholder="Générée automatiquement depuis le lien..." class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-logos-yellow mb-1">
-                        Chapeau de la vidéo (Résumé éditorial affiché sous le titre) *
-                    </label>
-                    <textarea id="vid-chapeau" rows="3" required placeholder="Rédigez l'accroche journalistique qui présente l'essentiel de cette vidéo aux téléspectateurs..." class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none"></textarea>
-                </div>
-
-                <div class="pt-2 flex justify-end gap-2">
-                    <button type="button" onclick="closeAdminVideoModal()" class="px-4 py-2.5 rounded-xl bg-white/10 text-slate-300 text-xs font-bold">Annuler</button>
-                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-logos-yellow text-logos-blue text-xs font-black uppercase">Enregistrer la vidéo</button>
-                </div>
             </form>
         </div>
     </div>
@@ -976,42 +799,6 @@
                 }
             ],
             videos: [
-                {
-                    id: 'vid-1',
-                    title: 'Développement urbain : modernisation des artères principales de Likasi',
-                    category: 'Likasi Info',
-                    date: '17 Nov 2026',
-                    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-                    thumbnail: '',
-                    chapeau: "Les travaux de réhabilitation des axes routiers stratégiques de la ville montagneuse avancent à grands pas. Reportage complet de notre rédaction sur l'impact économique pour les habitants de Likasi."
-                },
-                {
-                    id: 'vid-2',
-                    title: 'Secteur minier au Haut-Katanga : perspectives de production et emploi local',
-                    category: 'Politique',
-                    date: '16 Nov 2026',
-                    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                    thumbnail: '',
-                    chapeau: "Analyse approfondie des retombées de la transformation locale des minerais à Likasi et des initiatives en faveur de la jeunesse katangaise."
-                },
-                {
-                    id: 'vid-3',
-                    title: 'Sport à Likasi : effervescence au stade avant le grand derby katangais',
-                    category: 'Sport',
-                    date: '15 Nov 2026',
-                    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoy.mp4',
-                    thumbnail: '',
-                    chapeau: "Les supporters se mobilisent massivement pour soutenir les clubs locaux. Ambiance, déclarations des entraîneurs et enjeux de la rencontre sur LOGOS TÉLÉVISION."
-                },
-                {
-                    id: 'vid-4',
-                    title: 'Culture & Talents : les artistes musiciens de Likasi à l’honneur',
-                    category: 'Culture',
-                    date: '14 Nov 2026',
-                    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-                    thumbnail: '',
-                    chapeau: "Retour en images sur le festival culturel organisé au cœur de Likasi pour promouvoir la richesse artistique du Haut-Katanga."
-                }
             ]
         };
 
@@ -1848,15 +1635,16 @@
 
             const grid = document.getElementById('news-grid-container');
             const previewGrid = document.getElementById('live-preview-news-grid');
+            if (!grid && !previewGrid) return;
 
-            if (filtered.length === 0) {
+            if (grid && filtered.length === 0) {
                 grid.innerHTML = `
                     <div class="col-span-full bg-logos-cardBg p-8 rounded-2xl border border-white/10 text-center space-y-2">
                         <i class="fa-solid fa-film text-3xl text-logos-yellow"></i>
                         <p class="text-sm font-bold text-white">Aucune vidéo trouvée pour cette recherche.</p>
                     </div>
                 `;
-            } else {
+            } else if (grid) {
                 grid.innerHTML = filtered.map(v => buildVideoCardHTML(v)).join('');
             }
 
@@ -1924,8 +1712,10 @@
         }
 
         function closeVideoDetailModal() {
-            document.getElementById('modal-video-player').innerHTML = '';
-            document.getElementById('video-detail-modal').classList.add('hidden');
+            const p = document.getElementById('modal-video-player');
+            const m = document.getElementById('video-detail-modal');
+            if (p) p.innerHTML = '';
+            if (m) m.classList.add('hidden');
             currentOpenedVideo = null;
         }
 
@@ -1978,7 +1768,6 @@
             const label = document.getElementById('admin-btn-label');
             const mobLabel = document.getElementById('mob-admin-label');
             const lockIcon = document.getElementById('admin-lock-icon');
-            const addVideoBtn = document.getElementById('news-admin-add-btn');
             const addAdBtn = document.getElementById('live-admin-ad-btn');
 
             if (isAdminLoggedIn) {
@@ -1987,20 +1776,20 @@
                 label.textContent = 'Régie TV';
                 mobLabel.textContent = 'Régie';
                 lockIcon.className = 'fa-solid fa-unlock text-emerald-400';
-                addVideoBtn.classList.remove('hidden');
-                addVideoBtn.classList.add('inline-flex');
-                addAdBtn.classList.remove('hidden');
-                addAdBtn.classList.add('inline-flex');
+                if (addAdBtn) {
+                    addAdBtn.classList.remove('hidden');
+                    addAdBtn.classList.add('inline-flex');
+                }
             } else {
                 badge.classList.add('hidden');
                 badge.classList.remove('inline-flex');
                 label.textContent = 'Espace Admin';
                 mobLabel.textContent = 'Admin';
                 lockIcon.className = 'fa-solid fa-lock text-logos-yellow';
-                addVideoBtn.classList.add('hidden');
-                addVideoBtn.classList.remove('inline-flex');
-                addAdBtn.classList.add('hidden');
-                addAdBtn.classList.remove('inline-flex');
+                if (addAdBtn) {
+                    addAdBtn.classList.add('hidden');
+                    addAdBtn.classList.remove('inline-flex');
+                }
             }
         }
 
@@ -2098,7 +1887,7 @@
             `).join('') || `<p class="text-xs text-slate-400">Aucune bannière publicitaire enregistrée.</p>`;
 
             const vidsList = document.getElementById('admin-videos-list');
-            vidsList.innerHTML = appState.videos.map(v => `
+            if (vidsList) vidsList.innerHTML = appState.videos.map(v => `
                 <div class="bg-logos-darkBg p-3.5 rounded-xl border border-white/10 flex items-center justify-between gap-3">
                     <div class="flex items-center gap-3 min-w-0">
                         <img src="${escapeHtml(getAutoVideoThumbnail(v))}" class="w-16 h-11 object-cover rounded-lg flex-shrink-0 bg-black">
@@ -2142,7 +1931,8 @@
         }
 
         function closeAdminVideoModal() {
-            document.getElementById('admin-video-form-modal').classList.add('hidden');
+            const m = document.getElementById('admin-video-form-modal');
+            if (m) m.classList.add('hidden');
         }
 
         function handleVideoUrlInput(val) {
