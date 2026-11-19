@@ -16,6 +16,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- HLS.js pour une diffusion en direct ultra-fluide (.m3u8) -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7"></script>
     <!-- mpegts.js pour les flux IPTV / VLC (.ts, MPEG-TS, FLV) -->
@@ -54,7 +55,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Animation fluide du bandeau Flash Info */
         @keyframes marquee {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
@@ -68,7 +68,6 @@
             animation-play-state: paused;
         }
 
-        /* Barre de défilement personnalisée */
         ::-webkit-scrollbar {
             width: 5px;
             height: 5px;
@@ -84,7 +83,6 @@
             background: #F4CA00;
         }
 
-        /* Conteneur vidéo responsive 16:9 */
         .video-wrapper {
             position: relative;
             padding-bottom: 56.25%;
@@ -181,6 +179,9 @@
                             <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span> EN DIRECT
                         </span>
                         <span class="text-xs sm:text-sm font-bold text-white" id="live-channel-subtitle">LOGOS TÉLÉVISION — Likasi</span>
+                        <span class="hidden sm:inline-flex items-center gap-1 bg-white/10 text-logos-yellow text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-white/10">
+                            <i class="fa-solid fa-signal"></i> Flux Haute Capacité
+                        </span>
                     </div>
 
                     <div class="flex items-center gap-2">
@@ -208,7 +209,7 @@
                             <span class="text-xs italic text-slate-300" id="live-slogan-badge">« Votre plaisir »</span>
                         </div>
                         <h1 id="live-program-title" class="text-base sm:text-lg font-extrabold text-white leading-snug">
-                          En Direct Depuis  Likasi
+                            Journal Télévisé — Édition Spéciale Likasi
                         </h1>
                         <p id="live-program-desc" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
                             Suivez toute l'actualité politique, économique, sociale et culturelle de Likasi et de la province du Haut-Katanga.
@@ -292,13 +293,13 @@
             
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-logos-cardBg p-4 rounded-2xl border border-white/10">
                 <div>
-                    <h1 class="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-newspaper text-logos-yellow"></i> Actualités & Reportages Vidéo
-                    </h1>
-                    <p class="text-xs text-slate-300 mt-0.5">Retrouvez chaque reportage accompagné de son chapeau éditorial — Rédaction Likasi.</p>
+                    <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-newspaper text-logos-yellow"></i> Vidéos d'Actualité & Reportages
+                    </h2>
+                    <p class="text-xs text-slate-400">Toute l'information de Likasi et du Haut-Katanga en images avec chapeau éditorial.</p>
                 </div>
 
-                <button type="button" id="news-admin-add-btn" onclick="openAdminVideoModal()" class="hidden px-4 py-2.5 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue font-extrabold text-xs items-center gap-2 shadow-lg transition self-start sm:self-auto">
+                <button type="button" id="news-admin-add-btn" onclick="openAdminVideoModal()" class="hidden px-4 py-2.5 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue font-extrabold text-xs items-center gap-2 shadow-lg transition">
                     <i class="fa-solid fa-plus-circle"></i> Ajouter une vidéo
                 </button>
             </div>
@@ -368,12 +369,10 @@
 
             <!-- Réseaux Sociaux Officiels (Logos cliquables directs) -->
             <div class="bg-logos-cardBg p-5 rounded-2xl border border-white/10 space-y-4">
-                <div>
-                    <h2 class="text-base font-extrabold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-share-nodes text-logos-yellow"></i> Nos Réseaux Sociaux Officiels
-                    </h2>
-                    <p class="text-xs text-slate-400 mt-0.5">Cliquez directement sur un logo pour accéder à notre page officielle.</p>
-                </div>
+                <h2 class="text-sm sm:text-base font-extrabold text-logos-yellow flex items-center gap-2">
+                    <i class="fa-solid fa-share-nodes"></i> Suivez LOGOS TÉLÉVISION sur les Réseaux Sociaux
+                </h2>
+                <p class="text-xs text-slate-400">Cliquez directement sur le logo d'un réseau social pour accéder à notre page officielle.</p>
 
                 <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
                     <!-- YouTube -->
@@ -426,7 +425,7 @@
                 <div>
                     <span class="text-[10px] font-black uppercase tracking-widest bg-logos-yellow text-logos-blue px-2.5 py-0.5 rounded">Accès Réservé Administrateur</span>
                     <h1 class="text-lg sm:text-xl font-extrabold text-white mt-1">Régie & Paramètres LOGOS TÉLÉVISION</h1>
-                    <p class="text-xs text-blue-200">Modifiez le logo, le flux en direct, les bannières publicitaires, les vidéos et les contacts.</p>
+                    <p class="text-xs text-blue-200">Modifiez le logo, le flux en direct, la vidéo de secours, les bannières publicitaires, les vidéos et les contacts.</p>
                 </div>
                 <button type="button" onclick="logoutAdmin()" class="px-4 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-200 text-xs font-bold flex items-center gap-2 transition">
                     <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
@@ -496,29 +495,53 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1.5">
-                        URL du Flux TV en Direct (VLC / IPTV .m3u8, .ts, .m3u, YouTube Live ou MP4)
+                        URL du Flux TV en Direct (YouTube Live, VLC / IPTV .m3u8, .ts, .m3u ou MP4)
                     </label>
-                    <input type="text" id="cfg-stream-url" required placeholder="Ex: http://serveur-iptv:8080/live/chaine.m3u8 ou .ts" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
-                    <p class="text-[11px] text-slate-400 mt-1">
-                        <i class="fa-solid fa-circle-info text-logos-yellow mr-1"></i>
-                        Compatible avec les liens de diffusion VLC / IPTV (<code class="text-logos-yellow">.m3u8</code>, flux <code class="text-logos-yellow">.ts</code>, playlists <code class="text-logos-yellow">.m3u</code>, YouTube Live et MP4).
-                    </p>
+                    <input type="text" id="cfg-stream-url" required placeholder="Ex: https://www.youtube.com/watch?v=... ou flux .m3u8 / .ts" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none mb-2">
+                    <div class="bg-logos-darkBg/70 border border-dashed border-white/20 rounded-xl p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <span class="text-[11px] font-semibold text-logos-yellow flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-video"></i> Ou diffuser un fichier local (MP4, WebM, playlist M3U) :
+                        </span>
+                        <input type="file" id="cfg-stream-file" accept="video/*,.m3u,.m3u8,.ts" onchange="handleLiveStreamFileUpload(event)" class="text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-logos-yellow file:text-logos-blue cursor-pointer">
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Titre de l'émission en cours</label>
-                        <input type="text" id="cfg-program-title" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Description courte du programme</label>
-                        <input type="text" id="cfg-program-desc" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                <!-- Serveur Miroir Haute Audience (2000+ spectateurs) -->
+                <div>
+                    <label class="block text-xs font-bold text-blue-300 mb-1.5">
+                        URL Serveur Miroir / Relais Haute Audience (Optionnel — bascule auto si +2000 spectateurs)
+                    </label>
+                    <input type="text" id="cfg-backup-stream-url" placeholder="Lien HLS (.m3u8) ou YouTube Live de relais en cas de pic d'audience" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                </div>
+
+                <!-- Vidéo de secours en boucle en cas de coupure du signal -->
+                <div class="bg-logos-darkBg/80 p-4 rounded-xl border border-logos-yellow/30 space-y-2.5">
+                    <label class="block text-xs font-extrabold text-logos-yellow flex items-center gap-1.5">
+                        <i class="fa-solid fa-repeat"></i> Vidéo de secours en boucle (si coupure de signal / réseau)
+                    </label>
+                    <p class="text-[11px] text-slate-400">
+                        Cette vidéo tourne automatiquement en boucle si le signal du direct coupe (même pendant 5 min ou plus), et laisse place au direct dès que la connexion revient.
+                    </p>
+                    <input type="text" id="cfg-fallback-url" placeholder="Lien MP4 de secours (jingle, promo chaîne...)" class="w-full bg-logos-cardBg border border-white/15 rounded-xl px-3.5 py-2 text-xs text-white focus:border-logos-yellow focus:outline-none">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
+                        <span class="text-[11px] text-slate-300 font-semibold">Ou importer une vidéo locale de secours :</span>
+                        <input type="file" accept="video/*" onchange="handleFallbackVideoUpload(event)" class="text-xs text-slate-300 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-white/15 file:text-white cursor-pointer">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1.5">Bandeau défilant (Flash Info Ticker)</label>
-                    <textarea id="cfg-ticker" rows="2" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none"></textarea>
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">Titre de l'émission en cours</label>
+                    <input type="text" id="cfg-program-title" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">Description du programme en cours</label>
+                    <textarea id="cfg-program-desc" rows="2" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">Bandeau Flash Info (texte défilant)</label>
+                    <input type="text" id="cfg-ticker" required class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
                 </div>
 
                 <div class="pt-2 flex justify-end">
@@ -528,14 +551,14 @@
                 </div>
             </form>
 
-            <!-- 2. GESTION DES BANNIÈRES PUBLICITAIRES (ADMIN) -->
-            <div id="admin-ads-panel" class="admin-sub-panel hidden space-y-4">
-                <div class="bg-logos-cardBg p-5 rounded-2xl border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <!-- 2. GESTION DES BANNIÈRES PUBLICITAIRES -->
+            <div id="admin-ads-panel" class="admin-sub-panel hidden bg-logos-cardBg p-5 rounded-2xl border border-white/10 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <h3 class="text-base font-extrabold text-logos-yellow">Gestion des Bannières Publicitaires</h3>
-                        <p class="text-xs text-slate-400">Publiez ou modifiez les affiches publicitaires diffusées sous le lecteur en direct.</p>
+                        <h3 class="text-base font-extrabold text-logos-yellow">Bannières Publicitaires (Direct TV)</h3>
+                        <p class="text-xs text-slate-400">Publiez ou supprimez les bannières publicitaires affichées sous le lecteur en direct.</p>
                     </div>
-                    <button type="button" onclick="openAdminAdModal()" class="px-4 py-2.5 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue font-extrabold text-xs flex items-center gap-2 shadow">
+                    <button type="button" onclick="openAdminAdModal()" class="px-4 py-2.5 rounded-xl bg-logos-yellow text-logos-blue font-extrabold text-xs flex items-center gap-2 shadow">
                         <i class="fa-solid fa-plus"></i> Nouvelle Bannière Pub
                     </button>
                 </div>
@@ -544,13 +567,13 @@
             </div>
 
             <!-- 3. GESTION DES VIDÉOS D'ACTUALITÉ & CHAPEAUX -->
-            <div id="admin-videos-panel" class="admin-sub-panel hidden space-y-4">
-                <div class="bg-logos-cardBg p-5 rounded-2xl border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div id="admin-videos-panel" class="admin-sub-panel hidden bg-logos-cardBg p-5 rounded-2xl border border-white/10 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <h3 class="text-base font-extrabold text-logos-yellow">Gestion des Vidéos d'Actualité</h3>
-                        <p class="text-xs text-slate-400">Ajoutez, modifiez ou supprimez les reportages et leur chapeau éditorial.</p>
+                        <h3 class="text-base font-extrabold text-logos-yellow">Catalogue des Vidéos & Chapeaux</h3>
+                        <p class="text-xs text-slate-400">Publiez de nouvelles vidéos d'actualité avec leur chapeau éditorial.</p>
                     </div>
-                    <button type="button" onclick="openAdminVideoModal()" class="px-4 py-2.5 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue font-extrabold text-xs flex items-center gap-2 shadow">
+                    <button type="button" onclick="openAdminVideoModal()" class="px-4 py-2.5 rounded-xl bg-logos-yellow text-logos-blue font-extrabold text-xs flex items-center gap-2 shadow">
                         <i class="fa-solid fa-plus"></i> Nouvelle Vidéo
                     </button>
                 </div>
@@ -559,7 +582,7 @@
             </div>
 
             <!-- 4. GESTION CONTACTS & RÉSEAUX SOCIAUX -->
-            <form id="admin-socials-form" onsubmit="saveContactSettings(event)" class="admin-sub-panel hidden bg-logos-cardBg p-5 rounded-2xl border border-white/10 space-y-4">
+            <form id="admin-socials-form" onsubmit="saveSocialsSettings(event)" class="admin-sub-panel hidden bg-logos-cardBg p-5 rounded-2xl border border-white/10 space-y-4">
                 <h3 class="text-base font-extrabold text-logos-yellow flex items-center gap-2">
                     <i class="fa-solid fa-share-nodes"></i> Coordonnées & Liens Réseaux Sociaux
                 </h3>
@@ -707,11 +730,6 @@
 
             <form onsubmit="submitAdminLogin(event)" class="space-y-3">
                 <input type="password" id="admin-pin-input" required placeholder="Code PIN..." class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-4 py-3 text-center text-lg tracking-widest font-bold text-white focus:border-logos-yellow focus:outline-none">
-                
-                <div class="bg-blue-500/10 border border-blue-400/20 rounded-xl p-2.5 text-[11px] text-blue-200 flex items-center gap-2">
-                    <i class="fa-solid fa-circle-info text-logos-yellow"></i>
-                    <span>Code PIN par défaut : <strong class="text-logos-yellow font-mono">1234</strong></span>
-                </div>
 
                 <button type="submit" class="w-full py-3 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue font-black text-xs uppercase tracking-wider shadow-lg transition">
                     Déverrouiller la Régie
@@ -753,20 +771,26 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1">Date de publication</label>
-                        <input type="text" id="vid-date" required placeholder="Ex: 16 Nov 2026" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                        <input type="text" id="vid-date" required placeholder="Ex: 17 Nov 2026" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">URL de la vidéo (YouTube, Shorts ou MP4) *</label>
-                    <input type="text" id="vid-url" oninput="handleVideoUrlInput(this.value)" required placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    <label class="block text-xs font-bold text-slate-300 mb-1">URL de la vidéo (YouTube, Shorts, MP4) ou fichier local *</label>
+                    <input type="text" id="vid-url" oninput="handleVideoUrlInput(this.value)" required placeholder="https://www.youtube.com/watch?v=... ou importez ci-dessous" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none mb-2">
+                    <div class="bg-logos-darkBg/70 border border-dashed border-white/20 rounded-xl p-2.5 flex flex-col gap-1.5">
+                        <span class="text-[11px] font-semibold text-logos-yellow flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-video"></i> Ou importer directement une vidéo depuis votre appareil :
+                        </span>
+                        <input type="file" id="vid-file-input" accept="video/*" onchange="handleVideoFileUpload(event)" class="w-full text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-logos-yellow file:text-logos-blue cursor-pointer">
+                    </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Miniature automatique (selon le lien vidéo)</label>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Miniature automatique (selon le lien ou la vidéo)</label>
                     <div class="flex items-center gap-3">
                         <img id="vid-thumb-preview" src="https://placehold.co/320x180/001E7A/F4CA00?text=APERCU+VIDEO" alt="Aperçu miniature" class="w-24 aspect-video object-cover rounded-lg border border-white/15 bg-black flex-shrink-0">
-                        <input type="text" id="vid-thumb" oninput="updateThumbPreview(this.value); saveAdminDrafts();" placeholder="Générée automatiquement depuis le lien..." class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                        <input type="text" id="vid-thumb" oninput="updateThumbPreview(this.value)" placeholder="Générée automatiquement depuis le lien..." class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
                     </div>
                 </div>
 
@@ -845,10 +869,10 @@
 
     <!-- ==================== LOGIQUE JAVASCRIPT COMPLÈTE ==================== -->
     <script>
-        const STORAGE_KEY = 'logos_tv_likasi_data_v3';
-        const SESSION_KEY = 'logos_tv_admin_session_v3';
+        const STORAGE_KEY = 'logos_tv_likasi_data_v4';
+        const SESSION_KEY = 'logos_tv_admin_session_v4';
 
-        // Stockage sécurisé (fonctionne même si Chrome ou une WebView bloque localStorage)
+        // Stockage sécurisé optimisé pour navigateurs mobiles & WebView
         const memoryStorage = {};
         function safeGetItem(key) {
             try {
@@ -862,7 +886,7 @@
             try {
                 window.localStorage.setItem(key, val);
             } catch (e) {
-                console.warn('Stockage local limité, sauvegarde en mémoire active.');
+                console.warn('Stockage local restreint, sauvegarde en mémoire active.');
             }
         }
         function safeRemoveItem(key) {
@@ -895,6 +919,8 @@
                 slogan: 'Votre plaisir',
                 logoUrl: '',
                 streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+                backupStreamUrl: '',
+                fallbackVideoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
                 programTitle: 'Journal Télévisé — Édition Spéciale Likasi',
                 programDesc: "Toute l'actualité politique, économique, minière et sociale de la ville montagneuse de Likasi et du Haut-Katanga.",
                 ticker: "Bienvenue sur LOGOS TÉLÉVISION Likasi — Votre plaisir • Suivez nos éditions d'information en direct depuis le Haut-Katanga (RDC) • Contactez la rédaction au +243 970 000 000.",
@@ -931,7 +957,7 @@
                     id: 'vid-1',
                     title: 'Développement urbain : modernisation des artères principales de Likasi',
                     category: 'Likasi Info',
-                    date: '16 Nov 2026',
+                    date: '17 Nov 2026',
                     url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
                     thumbnail: '',
                     chapeau: "Les travaux de réhabilitation des axes routiers stratégiques de la ville montagneuse avancent à grands pas. Reportage complet de notre rédaction sur l'impact économique pour les habitants de Likasi."
@@ -940,7 +966,7 @@
                     id: 'vid-2',
                     title: 'Secteur minier au Haut-Katanga : perspectives de production et emploi local',
                     category: 'Politique',
-                    date: '15 Nov 2026',
+                    date: '16 Nov 2026',
                     url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
                     thumbnail: '',
                     chapeau: "Analyse approfondie des retombées de la transformation locale des minerais à Likasi et des initiatives en faveur de la jeunesse katangaise."
@@ -949,7 +975,7 @@
                     id: 'vid-3',
                     title: 'Sport à Likasi : effervescence au stade avant le grand derby katangais',
                     category: 'Sport',
-                    date: '14 Nov 2026',
+                    date: '15 Nov 2026',
                     url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoy.mp4',
                     thumbnail: '',
                     chapeau: "Les supporters se mobilisent massivement pour soutenir les clubs locaux. Ambiance, déclarations des entraîneurs et enjeux de la rencontre sur LOGOS TÉLÉVISION."
@@ -958,13 +984,22 @@
                     id: 'vid-4',
                     title: 'Culture & Talents : les artistes musiciens de Likasi à l’honneur',
                     category: 'Culture',
-                    date: '13 Nov 2026',
+                    date: '14 Nov 2026',
                     url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
                     thumbnail: '',
                     chapeau: "Retour en images sur le festival culturel organisé au cœur de Likasi pour promouvoir la richesse artistique du Haut-Katanga."
                 }
             ]
         };
+
+        // ==================== CONFIGURATION SUPABASE (TEMPS RÉEL) ====================
+        const SUPABASE_URL = 'https://hrnxcvptrmzcfspmcmad.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_NRUrWoZh37vAD9TPirtfMw_mWQQUVX7';
+        const SUPABASE_ROW_ID = 2;
+        const supabaseClient = (typeof window.supabase !== 'undefined')
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+            : null;
+        let supabaseColumnName = 'data';
 
         let appState = loadAppState();
         let isAdminLoggedIn = false;
@@ -977,268 +1012,214 @@
         let currentAdIndex = 0;
         let adRotationTimer = null;
         let streamWatchdogTimer = null;
+        let streamReconnectTimer = null;
+        let isFallbackActive = false;
+        let usingBackupStream = false;
         let lastPlaybackTime = 0;
         let stallCounter = 0;
 
-        // ==================== EXTRACTION AUTOMATIQUE DES MINIATURES ====================
-        function extractYouTubeId(url) {
-            if (!url) return null;
-            const regExp = /^.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/|live\/)([^#&?]*).*/;
-            const match = url.trim().match(regExp);
-            return (match && match[1] && match[1].length === 11) ? match[1] : null;
+        // Délai aléatoire (Jitter) pour éviter que 2000+ utilisateurs reconnectent au même instant
+        function getAntiCongestionJitter(minMs = 1000, maxMs = 7500) {
+            return Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
         }
 
-        function getAutoThumbnailFromUrl(url) {
-            const ytId = extractYouTubeId(url);
-            if (ytId) {
-                return `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+        function mergeWithDefaults(parsed) {
+            if (!parsed || typeof parsed !== 'object') {
+                return JSON.parse(JSON.stringify(DEFAULT_DATA));
             }
-            return '';
-        }
-
-        function handleVideoUrlInput(url) {
-            const autoThumb = getAutoThumbnailFromUrl(url);
-            const thumbInput = document.getElementById('vid-thumb');
-            if (autoThumb) {
-                thumbInput.value = autoThumb;
-                updateThumbPreview(autoThumb);
-            } else if (!thumbInput.value.trim()) {
-                updateThumbPreview('');
-            }
-            saveAdminDrafts();
-        }
-
-        function updateThumbPreview(thumbUrl) {
-            const previewEl = document.getElementById('vid-thumb-preview');
-            if (!previewEl) return;
-            previewEl.src = thumbUrl && thumbUrl.trim() !== ''
-                ? thumbUrl.trim()
-                : 'https://placehold.co/320x180/001E7A/F4CA00?text=APERCU+VIDEO';
-        }
-
-        // ==================== GESTION DE SESSION & BROUILLONS PERSISTANTS ====================
-        function saveAdminSessionState(extra = {}) {
-            try {
-                const existing = JSON.parse(safeGetItem(SESSION_KEY) || '{}');
-                const updated = {
-                    ...existing,
-                    isAdminLoggedIn,
-                    activeTab: currentActiveTab,
-                    adminSubTab: currentAdminSubTab,
-                    ...extra
-                };
-                safeSetItem(SESSION_KEY, JSON.stringify(updated));
-            } catch (e) {
-                console.warn('Impossible de sauvegarder la session:', e);
-            }
-        }
-
-        function saveAdminDrafts() {
-            if (!isAdminLoggedIn) return;
-            const videoModalOpen = !document.getElementById('admin-video-form-modal').classList.contains('hidden');
-            const adModalOpen = !document.getElementById('admin-ad-form-modal').classList.contains('hidden');
-
-            const sessionPatch = {
-                streamDraft: {
-                    logoUrl: document.getElementById('cfg-logo-url')?.value || '',
-                    channelName: document.getElementById('cfg-channel-name')?.value || '',
-                    slogan: document.getElementById('cfg-slogan')?.value || '',
-                    streamUrl: document.getElementById('cfg-stream-url')?.value || '',
-                    programTitle: document.getElementById('cfg-program-title')?.value || '',
-                    programDesc: document.getElementById('cfg-program-desc')?.value || '',
-                    ticker: document.getElementById('cfg-ticker')?.value || ''
+            return {
+                adminPin: parsed.adminPin || DEFAULT_DATA.adminPin,
+                settings: {
+                    ...DEFAULT_DATA.settings,
+                    ...(parsed.settings || {}),
+                    socials: { ...DEFAULT_DATA.settings.socials, ...(parsed.settings?.socials || {}) }
                 },
-                socialsDraft: {
-                    phone: document.getElementById('cfg-phone')?.value || '',
-                    address: document.getElementById('cfg-address')?.value || '',
-                    youtube: document.getElementById('cfg-youtube')?.value || '',
-                    facebook: document.getElementById('cfg-facebook')?.value || '',
-                    tiktok: document.getElementById('cfg-tiktok')?.value || '',
-                    x: document.getElementById('cfg-x')?.value || '',
-                    instagram: document.getElementById('cfg-instagram')?.value || ''
-                }
+                ads: Array.isArray(parsed.ads) ? parsed.ads : DEFAULT_DATA.ads,
+                videos: Array.isArray(parsed.videos) ? parsed.videos : DEFAULT_DATA.videos
             };
-
-            if (videoModalOpen) {
-                sessionPatch.openModal = 'video';
-                sessionPatch.videoDraft = {
-                    editId: document.getElementById('vid-edit-id').value,
-                    title: document.getElementById('vid-title').value,
-                    category: document.getElementById('vid-category').value,
-                    date: document.getElementById('vid-date').value,
-                    url: document.getElementById('vid-url').value,
-                    thumb: document.getElementById('vid-thumb').value,
-                    chapeau: document.getElementById('vid-chapeau').value
-                };
-            } else if (adModalOpen) {
-                sessionPatch.openModal = 'ad';
-                sessionPatch.adDraft = {
-                    editId: document.getElementById('ad-edit-id').value,
-                    title: document.getElementById('ad-title').value,
-                    subtitle: document.getElementById('ad-subtitle').value,
-                    image: document.getElementById('ad-image').value,
-                    link: document.getElementById('ad-link').value,
-                    cta: document.getElementById('ad-cta').value
-                };
-            } else {
-                sessionPatch.openModal = null;
-            }
-
-            saveAdminSessionState(sessionPatch);
         }
-
-        function restoreAdminSession() {
-            try {
-                const savedSession = JSON.parse(safeGetItem(SESSION_KEY) || 'null');
-                if (!savedSession || !savedSession.isAdminLoggedIn) return;
-
-                isAdminLoggedIn = true;
-                updateAdminUIState();
-
-                if (savedSession.activeTab) {
-                    switchTab(savedSession.activeTab);
-                }
-                if (savedSession.adminSubTab) {
-                    switchAdminSubTab(savedSession.adminSubTab);
-                }
-
-                if (savedSession.streamDraft) {
-                    const sd = savedSession.streamDraft;
-                    if (sd.logoUrl !== undefined) document.getElementById('cfg-logo-url').value = sd.logoUrl;
-                    if (sd.channelName) document.getElementById('cfg-channel-name').value = sd.channelName;
-                    if (sd.slogan) document.getElementById('cfg-slogan').value = sd.slogan;
-                    if (sd.streamUrl) document.getElementById('cfg-stream-url').value = sd.streamUrl;
-                    if (sd.programTitle) document.getElementById('cfg-program-title').value = sd.programTitle;
-                    if (sd.programDesc) document.getElementById('cfg-program-desc').value = sd.programDesc;
-                    if (sd.ticker) document.getElementById('cfg-ticker').value = sd.ticker;
-                }
-
-                if (savedSession.socialsDraft) {
-                    const soc = savedSession.socialsDraft;
-                    if (soc.phone) document.getElementById('cfg-phone').value = soc.phone;
-                    if (soc.address) document.getElementById('cfg-address').value = soc.address;
-                    if (soc.youtube) document.getElementById('cfg-youtube').value = soc.youtube;
-                    if (soc.facebook) document.getElementById('cfg-facebook').value = soc.facebook;
-                    if (soc.tiktok) document.getElementById('cfg-tiktok').value = soc.tiktok;
-                    if (soc.x) document.getElementById('cfg-x').value = soc.x;
-                    if (soc.instagram) document.getElementById('cfg-instagram').value = soc.instagram;
-                }
-
-                if (savedSession.openModal === 'video' && savedSession.videoDraft) {
-                    const vd = savedSession.videoDraft;
-                    openAdminVideoModal(vd.editId || null, true);
-                    document.getElementById('vid-edit-id').value = vd.editId || '';
-                    document.getElementById('vid-title').value = vd.title || '';
-                    document.getElementById('vid-category').value = vd.category || 'Likasi Info';
-                    document.getElementById('vid-date').value = vd.date || '';
-                    document.getElementById('vid-url').value = vd.url || '';
-                    document.getElementById('vid-thumb').value = vd.thumb || '';
-                    updateThumbPreview(vd.thumb || getAutoThumbnailFromUrl(vd.url));
-                    document.getElementById('vid-chapeau').value = vd.chapeau || '';
-                } else if (savedSession.openModal === 'ad' && savedSession.adDraft) {
-                    const ad = savedSession.adDraft;
-                    openAdminAdModal(ad.editId || null, true);
-                    document.getElementById('ad-edit-id').value = ad.editId || '';
-                    document.getElementById('ad-title').value = ad.title || '';
-                    document.getElementById('ad-subtitle').value = ad.subtitle || '';
-                    document.getElementById('ad-image').value = ad.image || '';
-                    document.getElementById('ad-link').value = ad.link || '';
-                    document.getElementById('ad-cta').value = ad.cta || "Découvrir l'offre";
-                }
-            } catch (e) {
-                console.warn('Erreur restauration session:', e);
-            }
-        }
-
-        function attachAutoDraftListeners() {
-            const draftFieldIds = [
-                'cfg-logo-url', 'cfg-channel-name', 'cfg-slogan', 'cfg-stream-url',
-                'cfg-program-title', 'cfg-program-desc', 'cfg-ticker',
-                'cfg-phone', 'cfg-address', 'cfg-youtube', 'cfg-facebook',
-                'cfg-tiktok', 'cfg-x', 'cfg-instagram',
-                'vid-title', 'vid-category', 'vid-date', 'vid-chapeau',
-                'ad-title', 'ad-subtitle', 'ad-image', 'ad-link', 'ad-cta'
-            ];
-            draftFieldIds.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.addEventListener('input', saveAdminDrafts);
-                    el.addEventListener('change', saveAdminDrafts);
-                }
-            });
-
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'hidden' && isAdminLoggedIn) {
-                    saveAdminDrafts();
-                }
-            });
-            window.addEventListener('pagehide', () => {
-                if (isAdminLoggedIn) saveAdminDrafts();
-            });
-        }
-
-        // ==================== INITIALISATION AU CHARGEMENT ====================
-        window.addEventListener('DOMContentLoaded', () => {
-            applySettingsToUI();
-            initLivePlayer(appState.settings.streamUrl);
-            renderAdBanner();
-            startAdAutoRotation();
-            renderNewsList();
-            renderLivePreviewNews();
-            attachAutoDraftListeners();
-            restoreAdminSession();
-        });
 
         function loadAppState() {
             try {
-                const saved = safeGetItem(STORAGE_KEY);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    return {
-                        ...DEFAULT_DATA,
-                        ...parsed,
-                        settings: {
-                            ...DEFAULT_DATA.settings,
-                            ...(parsed.settings || {}),
-                            socials: { ...DEFAULT_DATA.settings.socials, ...(parsed.settings?.socials || {}) }
-                        },
-                        ads: parsed.ads || DEFAULT_DATA.ads,
-                        videos: parsed.videos || DEFAULT_DATA.videos
-                    };
+                const raw = safeGetItem(STORAGE_KEY);
+                if (raw) {
+                    return mergeWithDefaults(JSON.parse(raw));
                 }
             } catch (e) {
-                console.warn('Erreur de lecture stockage local:', e);
+                console.warn('Lecture stockage local impossible:', e);
             }
             return JSON.parse(JSON.stringify(DEFAULT_DATA));
         }
 
-        function persistAppState() {
-            safeSetItem(STORAGE_KEY, JSON.stringify(appState));
-        }
+        async function syncFromSupabase() {
+            if (!supabaseClient) return;
+            try {
+                const { data: rows, error } = await supabaseClient
+                    .from('app_config')
+                    .select('*')
+                    .eq('id', SUPABASE_ROW_ID)
+                    .limit(1);
 
-        function renderBrandLogo(containerId) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            const customLogo = appState.settings.logoUrl;
-            if (customLogo && customLogo.trim() !== '') {
-                container.innerHTML = `<img src="${customLogo}" alt="${appState.settings.channelName}" onerror="this.style.display='none'" class="max-h-12 sm:max-h-14 w-auto object-contain rounded-lg">`;
-            } else {
-                container.innerHTML = DEFAULT_LOGO_SVG;
+                if (error) {
+                    console.warn('Erreur lecture Supabase:', error.message);
+                    return;
+                }
+
+                if (rows && rows.length > 0) {
+                    const row = rows[0];
+                    if ('données' in row && !('data' in row)) {
+                        supabaseColumnName = 'données';
+                    }
+                    const cloudPayload = row[supabaseColumnName];
+                    if (cloudPayload && typeof cloudPayload === 'object' && Object.keys(cloudPayload).length > 0) {
+                        const prevStream = appState.settings.streamUrl;
+                        appState = mergeWithDefaults(cloudPayload);
+                        safeSetItem(STORAGE_KEY, JSON.stringify(appState));
+                        applyChannelSettingsToUI();
+                        renderAdBannerCarousel();
+                        renderNewsList();
+                        renderAdminLists();
+                        if (appState.settings.streamUrl !== prevStream) {
+                            isFallbackActive = false;
+                            usingBackupStream = false;
+                            initLivePlayer(appState.settings.streamUrl);
+                        }
+                    } else {
+                        // Initialise la ligne existante avec les données par défaut si elle est encore vide {}
+                        await pushStateToSupabase();
+                    }
+                } else {
+                    // Crée la ligne id: 2 automatiquement si elle n'existe pas encore
+                    const insertObj = { id: SUPABASE_ROW_ID };
+                    insertObj[supabaseColumnName] = appState;
+                    const { error: insErr } = await supabaseClient.from('app_config').insert([insertObj]);
+                    if (insErr && insErr.message && insErr.message.includes('données')) {
+                        supabaseColumnName = 'données';
+                        await supabaseClient.from('app_config').insert([{ id: SUPABASE_ROW_ID, 'données': appState }]);
+                    }
+                }
+            } catch (e) {
+                console.warn('Synchronisation Supabase indisponible:', e);
             }
         }
 
-        function normalizeUrl(url) {
-            if (!url) return '#';
-            const trimmed = url.trim();
-            if (/^https?:\/\//i.test(trimmed)) return trimmed;
-            return 'https://' + trimmed;
+        async function pushStateToSupabase() {
+            if (!supabaseClient) return;
+            try {
+                const upsertObj = { id: SUPABASE_ROW_ID };
+                upsertObj[supabaseColumnName] = appState;
+                const { error } = await supabaseClient
+                    .from('app_config')
+                    .upsert([upsertObj], { onConflict: 'id' });
+
+                if (error) {
+                    console.error('Erreur sauvegarde Supabase:', error.message);
+                    showToast('Sauvegardé localement (erreur réseau cloud).', true);
+                }
+            } catch (e) {
+                console.error('Exception sauvegarde Supabase:', e);
+            }
         }
 
-        function applySettingsToUI() {
+        function persistAppState() {
+            safeSetItem(STORAGE_KEY, JSON.stringify(appState));
+            pushStateToSupabase();
+        }
+
+        // ==================== INITIALISATION AU CHARGEMENT ====================
+        window.addEventListener('DOMContentLoaded', async () => {
+            isAdminLoggedIn = safeGetItem(SESSION_KEY) === 'true';
+            updateAdminUIState();
+            applyChannelSettingsToUI();
+            initLivePlayer(appState.settings.streamUrl);
+            renderAdBannerCarousel();
+            startAdAutoRotation();
+            renderNewsList();
+            renderAdminLists();
+
+            // Chargement et synchronisation en temps réel depuis Supabase
+            await syncFromSupabase();
+
+            if (supabaseClient) {
+                supabaseClient
+                    .channel('app_config_realtime')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'app_config', filter: `id=eq.${SUPABASE_ROW_ID}` }, (payload) => {
+                        const newRow = payload.new;
+                        if (!newRow) return;
+                        const cloudData = newRow[supabaseColumnName] || newRow.data || newRow['données'];
+                        if (cloudData && Object.keys(cloudData).length > 0) {
+                            const prevStream = appState.settings.streamUrl;
+                            appState = mergeWithDefaults(cloudData);
+                            safeSetItem(STORAGE_KEY, JSON.stringify(appState));
+                            applyChannelSettingsToUI();
+                            renderAdBannerCarousel();
+                            renderNewsList();
+                            renderAdminLists();
+                            if (appState.settings.streamUrl !== prevStream) {
+                                isFallbackActive = false;
+                                usingBackupStream = false;
+                                initLivePlayer(appState.settings.streamUrl);
+                            }
+                        }
+                    })
+                    .subscribe();
+            }
+
+            window.addEventListener('online', () => {
+                syncFromSupabase();
+                if (isFallbackActive) {
+                    checkLiveSignalAndResume(appState.settings.streamUrl);
+                }
+            });
+        });
+
+        // ==================== GESTION NAVIGATION ONGLETS ====================
+        function switchTab(tabId) {
+            currentActiveTab = tabId;
+            document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById('view-' + tabId);
+            if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.desk-nav-btn').forEach(btn => {
+                btn.classList.remove('bg-logos-yellow', 'text-logos-blue', 'font-bold');
+                btn.classList.add('text-slate-300', 'font-semibold');
+            });
+            const activeDesk = document.getElementById('desk-nav-' + tabId);
+            if (activeDesk) {
+                activeDesk.classList.add('bg-logos-yellow', 'text-logos-blue', 'font-bold');
+                activeDesk.classList.remove('text-slate-300', 'font-semibold');
+            }
+
+            document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+                btn.classList.remove('text-logos-yellow');
+                btn.classList.add('text-slate-400');
+            });
+            const activeMob = document.getElementById('mob-nav-' + tabId);
+            if (activeMob) {
+                activeMob.classList.add('text-logos-yellow');
+                activeMob.classList.remove('text-slate-400');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==================== RENDU LOGO & IDENTITÉ CHAÎNE ====================
+        function getLogoMarkup() {
+            const url = (appState.settings.logoUrl || '').trim();
+            if (url) {
+                return `<img src="${escapeHtml(url)}" alt="${escapeHtml(appState.settings.channelName)}" class="w-full h-auto max-h-14 object-contain rounded-lg" onerror="this.outerHTML=\`${DEFAULT_LOGO_SVG.replace(/"/g, '&quot;')}\`">`;
+            }
+            return DEFAULT_LOGO_SVG;
+        }
+
+        function applyChannelSettingsToUI() {
             const s = appState.settings;
-            renderBrandLogo('header-logo-container');
-            renderBrandLogo('contact-logo-container');
-            renderBrandLogo('admin-logo-preview');
+            const logoHtml = getLogoMarkup();
+
+            ['header-logo-container', 'contact-logo-container', 'admin-logo-preview'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = logoHtml;
+            });
 
             document.getElementById('header-channel-name').textContent = s.channelName;
             document.getElementById('header-slogan').textContent = `« ${s.slogan} »`;
@@ -1250,54 +1231,68 @@
 
             document.getElementById('contact-channel-title').textContent = s.channelName;
             document.getElementById('contact-slogan-text').textContent = `« ${s.slogan} »`;
-            document.getElementById('contact-address-text').innerHTML = `<i class="fa-solid fa-location-dot text-logos-yellow"></i> ${s.address}`;
+            document.getElementById('contact-address-text').innerHTML = `<i class="fa-solid fa-location-dot text-logos-yellow"></i> ${escapeHtml(s.address)}`;
             document.getElementById('contact-phone-display').textContent = s.phone;
-            document.getElementById('contact-phone-link').href = `tel:${s.phone.replace(/\s+/g, '')}`;
-            const cleanDigits = s.phone.replace(/[^0-9]/g, '');
-            document.getElementById('contact-whatsapp-link').href = `https://wa.me/${cleanDigits}`;
 
-            const ytUrl = normalizeUrl(s.socials.youtube);
-            const fbUrl = normalizeUrl(s.socials.facebook);
-            const ttUrl = normalizeUrl(s.socials.tiktok);
-            const xUrl = normalizeUrl(s.socials.x);
-            const igUrl = normalizeUrl(s.socials.instagram);
+            const cleanPhone = s.phone.replace(/[^0-9+]/g, '');
+            const waPhone = cleanPhone.replace('+', '');
+            document.getElementById('contact-phone-link').href = `tel:${cleanPhone}`;
+            document.getElementById('contact-whatsapp-link').href = `https://wa.me/${waPhone}`;
 
-            document.getElementById('social-link-youtube').href = ytUrl;
-            document.getElementById('social-link-facebook').href = fbUrl;
-            document.getElementById('social-link-tiktok').href = ttUrl;
-            document.getElementById('social-link-x').href = xUrl;
-            document.getElementById('social-link-instagram').href = igUrl;
+            const soc = s.socials;
+            const mapLinks = {
+                youtube: ['quick-social-youtube', 'social-link-youtube'],
+                facebook: ['quick-social-facebook', 'social-link-facebook'],
+                tiktok: ['quick-social-tiktok', 'social-link-tiktok'],
+                x: ['quick-social-x', 'social-link-x'],
+                instagram: ['quick-social-instagram', 'social-link-instagram']
+            };
+            Object.entries(mapLinks).forEach(([key, ids]) => {
+                ids.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.href = soc[key] || '#';
+                });
+            });
 
-            document.getElementById('quick-social-youtube').href = ytUrl;
-            document.getElementById('quick-social-facebook').href = fbUrl;
-            document.getElementById('quick-social-tiktok').href = ttUrl;
-            document.getElementById('quick-social-x').href = xUrl;
-            document.getElementById('quick-social-instagram').href = igUrl;
-
+            // Pré-remplir les champs de la régie Admin
             document.getElementById('cfg-logo-url').value = s.logoUrl || '';
             document.getElementById('cfg-channel-name').value = s.channelName;
             document.getElementById('cfg-slogan').value = s.slogan;
             document.getElementById('cfg-stream-url').value = s.streamUrl;
+            document.getElementById('cfg-backup-stream-url').value = s.backupStreamUrl || '';
+            document.getElementById('cfg-fallback-url').value = s.fallbackVideoUrl || '';
             document.getElementById('cfg-program-title').value = s.programTitle;
             document.getElementById('cfg-program-desc').value = s.programDesc;
             document.getElementById('cfg-ticker').value = s.ticker;
+
             document.getElementById('cfg-phone').value = s.phone;
             document.getElementById('cfg-address').value = s.address;
-            document.getElementById('cfg-youtube').value = s.socials.youtube;
-            document.getElementById('cfg-facebook').value = s.socials.facebook;
-            document.getElementById('cfg-tiktok').value = s.socials.tiktok;
-            document.getElementById('cfg-x').value = s.socials.x;
-            document.getElementById('cfg-instagram').value = s.socials.instagram;
+            document.getElementById('cfg-youtube').value = soc.youtube;
+            document.getElementById('cfg-facebook').value = soc.facebook;
+            document.getElementById('cfg-tiktok').value = soc.tiktok;
+            document.getElementById('cfg-x').value = soc.x;
+            document.getElementById('cfg-instagram').value = soc.instagram;
         }
 
-        // ==================== LECTEUR TV EN DIRECT ULTRA-FLUIDE (VLC / IPTV / HLS / YOUTUBE / MP4) ====================
-        function destroyActiveStreamPlayers() {
-            if (streamWatchdogTimer) {
-                clearInterval(streamWatchdogTimer);
-                streamWatchdogTimer = null;
-            }
+        // ==================== EXTRACTION YOUTUBE & MINIATURES ====================
+        function extractYouTubeId(url) {
+            if (!url) return null;
+            const regExp = /(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/|live\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+            const match = url.match(regExp);
+            return match ? match[1] : null;
+        }
+
+        function getAutoVideoThumbnail(video) {
+            if (video.thumbnail && video.thumbnail.trim() !== '') return video.thumbnail.trim();
+            const ytId = extractYouTubeId(video.url);
+            if (ytId) return `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+            return 'https://placehold.co/640x360/001E7A/F4CA00?text=LOGOS+TELEVISION';
+        }
+
+        // ==================== LECTEUR TV EN DIRECT HAUTE CAPACITÉ & SECOURS ====================
+        function destroyActiveStreamInstances() {
             if (hlsInstance) {
-                try { hlsInstance.destroy(); } catch (e) {}
+                hlsInstance.destroy();
                 hlsInstance = null;
             }
             if (mpegtsPlayerInstance) {
@@ -1309,494 +1304,462 @@
                 } catch (e) {}
                 mpegtsPlayerInstance = null;
             }
+            if (streamWatchdogTimer) {
+                clearInterval(streamWatchdogTimer);
+                streamWatchdogTimer = null;
+            }
+        }
+
+        function activateFallbackLoopPlayer(originalStreamUrl) {
+            if (isFallbackActive) return;
+            isFallbackActive = true;
+            destroyActiveStreamInstances();
+
+            const container = document.getElementById('live-player-container');
+            const fallbackUrl = (appState.settings.fallbackVideoUrl || '').trim() || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+
+            container.innerHTML = `
+                <video id="fallback-loop-video" src="${escapeHtml(fallbackUrl)}" autoplay muted loop playsinline controls class="w-full h-full object-contain bg-black"></video>
+                <div class="absolute top-3 left-3 right-3 z-20 flex flex-wrap items-center justify-between gap-2 bg-logos-blueDark/90 border border-logos-yellow/50 px-3 py-2 rounded-xl shadow-lg pointer-events-none">
+                    <div class="flex items-center gap-2 text-xs text-white font-bold">
+                        <span class="w-2.5 h-2.5 rounded-full bg-logos-yellow animate-ping"></span>
+                        <span>Continuité d'antenne : reconnexion automatique au Direct en cours...</span>
+                    </div>
+                    <span class="text-[10px] font-black uppercase bg-logos-yellow text-logos-blue px-2 py-0.5 rounded">Programme d'attente</span>
+                </div>
+            `;
+
+            const fbVid = document.getElementById('fallback-loop-video');
+            if (fbVid) fbVid.play().catch(() => {});
+
+            if (streamReconnectTimer) clearInterval(streamReconnectTimer);
+            const jitterInterval = 10000 + getAntiCongestionJitter(500, 5000);
+            streamReconnectTimer = setInterval(() => {
+                if (!navigator.onLine) return;
+                checkLiveSignalAndResume(originalStreamUrl);
+            }, jitterInterval);
+        }
+
+        function checkLiveSignalAndResume(originalStreamUrl) {
+            if (!originalStreamUrl || originalStreamUrl.startsWith('blob:')) return;
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+            fetch(originalStreamUrl, { method: 'GET', mode: 'no-cors', cache: 'no-store', signal: controller.signal })
+                .then(() => {
+                    clearTimeout(timeoutId);
+                    setTimeout(() => {
+                        isFallbackActive = false;
+                        usingBackupStream = false;
+                        initLivePlayer(originalStreamUrl);
+                        showToast('Signal rétabli : reprise fluide du Direct TV !');
+                    }, getAntiCongestionJitter(300, 3500));
+                })
+                .catch(() => {
+                    clearTimeout(timeoutId);
+                });
+        }
+
+        function setupStreamWatchdog(videoEl, streamUrl) {
+            lastPlaybackTime = 0;
+            stallCounter = 0;
+            if (streamWatchdogTimer) clearInterval(streamWatchdogTimer);
+
+            streamWatchdogTimer = setInterval(() => {
+                if (!videoEl || isFallbackActive) return;
+
+                if (!navigator.onLine) {
+                    activateFallbackLoopPlayer(streamUrl);
+                    return;
+                }
+
+                if (!videoEl.paused) {
+                    if (Math.abs(videoEl.currentTime - lastPlaybackTime) < 0.05) {
+                        stallCounter++;
+                        if (stallCounter === 3 && hlsInstance) {
+                            if (hlsInstance.levels && hlsInstance.levels.length > 1) {
+                                hlsInstance.nextLevel = 0;
+                            }
+                            setTimeout(() => {
+                                if (hlsInstance) hlsInstance.startLoad();
+                                videoEl.play().catch(() => {});
+                            }, getAntiCongestionJitter(400, 2200));
+                        } else if (stallCounter >= 5) {
+                            stallCounter = 0;
+                            const backupUrl = (appState.settings.backupStreamUrl || '').trim();
+                            if (backupUrl && !usingBackupStream) {
+                                usingBackupStream = true;
+                                initLivePlayer(backupUrl);
+                            } else {
+                                activateFallbackLoopPlayer(streamUrl);
+                            }
+                        }
+                    } else {
+                        stallCounter = 0;
+                        lastPlaybackTime = videoEl.currentTime;
+                    }
+                }
+            }, 2200);
+
+            videoEl.addEventListener('error', () => {
+                const backupUrl = (appState.settings.backupStreamUrl || '').trim();
+                if (backupUrl && !usingBackupStream) {
+                    usingBackupStream = true;
+                    initLivePlayer(backupUrl);
+                } else {
+                    activateFallbackLoopPlayer(streamUrl);
+                }
+            });
+        }
+
+        function unmuteLivePlayer() {
+            const vid = document.getElementById('html5-live-video');
+            const btn = document.getElementById('unmute-live-btn');
+            if (vid) {
+                vid.muted = false;
+                vid.volume = 1.0;
+                vid.play().catch(() => {});
+            }
+            if (btn) btn.remove();
         }
 
         function initLivePlayer(url) {
             const container = document.getElementById('live-player-container');
-            destroyActiveStreamPlayers();
+            destroyActiveStreamInstances();
+            if (streamReconnectTimer) {
+                clearInterval(streamReconnectTimer);
+                streamReconnectTimer = null;
+            }
+            isFallbackActive = false;
 
-            const cleanUrl = (url || '').trim();
-            const ytId = extractYouTubeId(cleanUrl);
+            const streamUrl = (url || '').trim();
+            if (!streamUrl) {
+                activateFallbackLoopPlayer(appState.settings.streamUrl);
+                return;
+            }
+
+            const ytId = extractYouTubeId(streamUrl);
+            const isLocalFileProtocol = window.location.protocol === 'file:';
+
+            // 1. Flux YouTube Live
             if (ytId) {
+                if (isLocalFileProtocol) {
+                    container.innerHTML = `
+                        <div class="absolute inset-0 bg-gradient-to-br from-logos-blueDark via-black to-logos-blue flex flex-col items-center justify-center p-5 text-center gap-3">
+                            <img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="Direct YouTube" class="absolute inset-0 w-full h-full object-cover opacity-35">
+                            <div class="relative z-10 flex flex-col items-center gap-2.5 max-w-md">
+                                <span class="bg-red-600 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-lg">DIRECT YOUTUBE LIVE</span>
+                                <h3 class="text-sm sm:text-base font-extrabold text-white drop-shadow">${escapeHtml(appState.settings.programTitle)}</h3>
+                                <a href="https://www.youtube.com/watch?v=${ytId}" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs uppercase tracking-wider shadow-xl flex items-center gap-2 transition transform hover:scale-105">
+                                    <i class="fa-brands fa-youtube text-base"></i> Lancer le Direct sur YouTube
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const originParam = encodeURIComponent(window.location.origin);
                 container.innerHTML = `
-                    <iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1" 
-                            title="LOGOS TÉLÉVISION Direct" 
-                            frameborder="0" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen></iframe>
+                    <iframe
+                        src="https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1&origin=${originParam}"
+                        title="LOGOS TÉLÉVISION En Direct"
+                        frameborder="0"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen>
+                    </iframe>
+                    <a href="https://www.youtube.com/watch?v=${ytId}" target="_blank" rel="noopener noreferrer" class="absolute top-3 right-3 z-20 bg-black/75 hover:bg-red-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-full border border-white/20 flex items-center gap-1.5 transition shadow">
+                        <i class="fa-brands fa-youtube text-red-500"></i> Ouvrir sur YouTube
+                    </a>
                 `;
                 return;
             }
 
-            // Si c'est une playlist IPTV .m3u (pas .m3u8), on extrait automatiquement le premier lien de flux
-            if (/\.m3u(\?|$)/i.test(cleanUrl) && !/\.m3u8(\?|$)/i.test(cleanUrl)) {
-                fetch(cleanUrl)
-                    .then(res => res.text())
-                    .then(text => {
-                        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l && !l.startsWith('#'));
-                        if (lines.length > 0) {
-                            initLivePlayer(lines[0]);
-                        } else {
-                            showToast('Aucun flux valide trouvé dans la playlist M3U.', true);
-                        }
-                    })
-                    .catch(() => {
-                        startStreamPlayback(cleanUrl, container);
-                    });
-                return;
-            }
-
-            startStreamPlayback(cleanUrl, container);
-        }
-
-        function attachSmoothStreamHandlers(video, url) {
-            const loader = document.getElementById('live-buffer-loader');
-            const unmuteBtn = document.getElementById('live-unmute-btn');
-
-            video.addEventListener('waiting', () => {
-                if (loader) loader.classList.remove('hidden');
-            });
-            video.addEventListener('playing', () => {
-                if (loader) loader.classList.add('hidden');
-                stallCounter = 0;
-            });
-            video.addEventListener('canplay', () => {
-                if (loader) loader.classList.add('hidden');
-            });
-
-            if (unmuteBtn) {
-                unmuteBtn.onclick = () => {
-                    video.muted = false;
-                    video.volume = 1;
-                    video.play().catch(() => {});
-                    unmuteBtn.classList.add('hidden');
-                };
-            }
-
-            // Watchdog anti-gel : relance silencieusement si l'image se fige plus de 8 secondes
-            lastPlaybackTime = 0;
-            stallCounter = 0;
-            streamWatchdogTimer = setInterval(() => {
-                if (currentActiveTab !== 'live' || video.paused) return;
-                if (Math.abs(video.currentTime - lastPlaybackTime) < 0.1) {
-                    stallCounter++;
-                    if (stallCounter >= 4) {
-                        stallCounter = 0;
-                        if (hlsInstance) {
-                            hlsInstance.startLoad();
-                            video.play().catch(() => {});
-                        } else if (mpegtsPlayerInstance) {
-                            mpegtsPlayerInstance.unload();
-                            mpegtsPlayerInstance.load();
-                            mpegtsPlayerInstance.play().catch(() => {});
-                        } else {
-                            initLivePlayer(url);
-                        }
-                    }
-                } else {
-                    lastPlaybackTime = video.currentTime;
-                    stallCounter = 0;
-                }
-            }, 2000);
-        }
-
-        function startStreamPlayback(url, container) {
+            // 2. Flux HLS (.m3u8), IPTV/MPEG-TS (.ts) ou Vidéo directe MP4
             container.innerHTML = `
-                <video id="live-html5-video" controls autoplay muted playsinline preload="auto"></video>
-                <div id="live-buffer-loader" class="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-2 pointer-events-none transition-opacity">
-                    <div class="w-9 h-9 border-4 border-logos-yellow border-t-transparent rounded-full animate-spin"></div>
-                    <span class="text-[11px] font-bold text-white bg-black/60 px-3 py-1 rounded-full">Connexion au flux direct...</span>
-                </div>
-                <button type="button" id="live-unmute-btn" class="absolute bottom-12 left-3 z-10 px-3 py-1.5 rounded-full bg-logos-yellow text-logos-blue font-black text-xs shadow-lg flex items-center gap-1.5 animate-bounce">
-                    <i class="fa-solid fa-volume-high"></i> Activer le son
+                <video id="html5-live-video" controls autoplay muted playsinline preload="auto" poster="https://placehold.co/1280x720/001E7A/F4CA00?text=LOGOS+TELEVISION+LIKASI"></video>
+                <button type="button" id="unmute-live-btn" onclick="unmuteLivePlayer()" class="absolute bottom-14 left-1/2 -translate-x-1/2 z-20 bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue font-black text-xs px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 transition animate-bounce">
+                    <i class="fa-solid fa-volume-high"></i> Activer le son du Direct
                 </button>
             `;
-            const video = document.getElementById('live-html5-video');
-            attachSmoothStreamHandlers(video, url);
+            const video = document.getElementById('html5-live-video');
+            const lowerUrl = streamUrl.toLowerCase();
 
-            const isTsStream = /\.ts(\?|$)/i.test(url) || /type=mpegts/i.test(url);
-            const isFlvStream = /\.flv(\?|$)/i.test(url);
-            const isHlsStream = /\.m3u8(\?|$)/i.test(url) || /format=m3u8/i.test(url) || (!/\.(mp4|webm|ogg|ts|flv)(\?|$)/i.test(url) && /^https?:\/\//i.test(url));
-
-            // 1. Flux IPTV / VLC MPEG-TS (.ts) ou FLV
-            if ((isTsStream || isFlvStream) && typeof mpegts !== 'undefined' && mpegts.getFeatureList().mseLivePlayback) {
+            if ((lowerUrl.includes('.ts') || lowerUrl.includes('.flv')) && typeof mpegts !== 'undefined' && mpegts.getFeatureList().mseLivePlayback) {
                 mpegtsPlayerInstance = mpegts.createPlayer({
-                    type: isFlvStream ? 'flv' : 'mpegts',
+                    type: lowerUrl.includes('.flv') ? 'flv' : 'mpegts',
                     isLive: true,
-                    url: url
+                    url: streamUrl
                 }, {
                     enableWorker: true,
                     enableStashBuffer: true,
-                    stashInitialSize: 384 * 1024,
+                    stashInitialSize: 512,
                     liveBufferLatencyChasing: true,
-                    liveBufferLatencyMaxLatency: 4.5,
-                    liveBufferLatencyMinRemain: 1.2,
-                    autoCleanupSourceBuffer: true,
-                    autoCleanupMaxBackwardDuration: 20,
-                    autoCleanupMinBackwardDuration: 10
+                    liveBufferLatencyMaxLatency: 8.0,
+                    liveBufferLatencyMinRemain: 2.0
                 });
                 mpegtsPlayerInstance.attachMediaElement(video);
                 mpegtsPlayerInstance.load();
                 mpegtsPlayerInstance.play().catch(() => {});
-                return;
-            }
-
-            // 2. Flux HLS / IPTV / VLC (.m3u8) avec adaptation dynamique de débit
-            if (isHlsStream && typeof Hls !== 'undefined' && Hls.isSupported()) {
+                mpegtsPlayerInstance.on(mpegts.Events.ERROR, () => {
+                    activateFallbackLoopPlayer(streamUrl);
+                });
+            } else if (lowerUrl.includes('.m3u8') && typeof Hls !== 'undefined' && Hls.isSupported()) {
                 hlsInstance = new Hls({
                     enableWorker: true,
                     lowLatencyMode: false,
-                    maxBufferLength: 20,
-                    maxMaxBufferLength: 40,
-                    backBufferLength: 15,
-                    liveSyncDurationCount: 3,
-                    liveMaxLatencyDurationCount: 6,
-                    abrEwmaDefaultEstimate: 1200000,
-                    abrBandWidthFactor: 0.85,
-                    abrBandWidthUpFactor: 0.6,
+                    maxBufferLength: 30,
+                    maxMaxBufferLength: 60,
+                    maxBufferHole: 1.0,
+                    liveSyncDurationCount: 4,
+                    liveMaxLatencyDurationCount: 10,
                     capLevelToPlayerSize: true,
-                    startLevel: -1,
-                    manifestLoadingMaxRetry: 6,
-                    manifestLoadingRetryDelay: 800,
-                    levelLoadingMaxRetry: 6,
-                    levelLoadingRetryDelay: 800,
+                    startLevel: 0,
+                    abrEwmaDefaultEstimate: 800000,
+                    abrBandWidthFactor: 0.75,
+                    abrBandWidthUpFactor: 0.5,
+                    manifestLoadingMaxRetry: 5,
+                    manifestLoadingRetryDelay: getAntiCongestionJitter(1000, 3500),
+                    levelLoadingMaxRetry: 5,
+                    levelLoadingRetryDelay: getAntiCongestionJitter(1000, 3500),
                     fragLoadingMaxRetry: 6,
-                    fragLoadingRetryDelay: 800
+                    fragLoadingRetryDelay: getAntiCongestionJitter(800, 3000)
                 });
-                hlsInstance.loadSource(url);
+                hlsInstance.loadSource(streamUrl);
                 hlsInstance.attachMedia(video);
                 hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+                    setTimeout(() => {
+                        if (hlsInstance) hlsInstance.currentLevel = -1;
+                    }, 3000);
                     video.play().catch(() => {});
                 });
                 hlsInstance.on(Hls.Events.ERROR, (event, data) => {
                     if (data.fatal) {
                         if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-                            hlsInstance.startLoad();
+                            stallCounter++;
+                            if (stallCounter >= 3) {
+                                const backupUrl = (appState.settings.backupStreamUrl || '').trim();
+                                if (backupUrl && !usingBackupStream) {
+                                    usingBackupStream = true;
+                                    initLivePlayer(backupUrl);
+                                } else {
+                                    activateFallbackLoopPlayer(streamUrl);
+                                }
+                            } else {
+                                setTimeout(() => {
+                                    if (hlsInstance) hlsInstance.startLoad();
+                                }, getAntiCongestionJitter(800, 3000));
+                            }
                         } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
                             hlsInstance.recoverMediaError();
                         } else {
-                            hlsInstance.destroy();
-                            hlsInstance = null;
-                            if (typeof mpegts !== 'undefined' && mpegts.getFeatureList().mseLivePlayback) {
-                                mpegtsPlayerInstance = mpegts.createPlayer({
-                                    type: 'mpegts',
-                                    isLive: true,
-                                    enableStashBuffer: true,
-                                    url: url
-                                });
-                                mpegtsPlayerInstance.attachMediaElement(video);
-                                mpegtsPlayerInstance.load();
-                                mpegtsPlayerInstance.play().catch(() => {});
-                            } else {
-                                video.src = url;
-                                video.play().catch(() => {});
-                            }
+                            activateFallbackLoopPlayer(streamUrl);
                         }
                     }
                 });
-                return;
+            } else {
+                video.src = streamUrl;
+                video.play().catch(() => {});
             }
 
-            // 3. Lecture native (Safari iOS HLS ou MP4 direct)
-            video.src = url;
-            video.play().catch(() => {});
+            setupStreamWatchdog(video, streamUrl);
         }
 
         function reloadLiveStream() {
+            isFallbackActive = false;
+            usingBackupStream = false;
             initLivePlayer(appState.settings.streamUrl);
-            showToast('Flux en direct actualisé pour une fluidité optimale');
+            showToast('Actualisation du flux Direct TV...');
         }
 
-        function changeStreamQuality(quality) {
+        function changeStreamQuality(q) {
             if (hlsInstance && hlsInstance.levels && hlsInstance.levels.length > 0) {
-                if (quality === 'auto') {
+                if (q === 'auto') {
                     hlsInstance.currentLevel = -1;
-                } else if (quality === '480p') {
+                } else if (q === '480p') {
                     hlsInstance.currentLevel = 0;
-                } else if (quality === '720p') {
-                    hlsInstance.currentLevel = Math.min(1, hlsInstance.levels.length - 1);
                 } else {
                     hlsInstance.currentLevel = hlsInstance.levels.length - 1;
                 }
             }
-            showToast(`Qualité vidéo réglée sur : ${quality.toUpperCase()}`);
+            showToast(`Qualité vidéo réglée sur : ${q}`);
         }
 
-        // ==================== BANNIÈRES PUBLICITAIRES ====================
-        function renderAdBanner() {
+        // ==================== CARROUSEL BANNIÈRES PUBLICITAIRES ====================
+        function renderAdBannerCarousel() {
             const display = document.getElementById('ad-banner-display');
             const dots = document.getElementById('ad-banner-dots');
-            const ads = appState.ads || [];
+            const ads = appState.ads;
 
-            if (ads.length === 0) {
-                display.innerHTML = `
-                    <div class="w-full p-6 text-center space-y-2">
-                        <p class="text-sm font-bold text-logos-yellow">Espace Publicitaire Disponible</p>
-                        <p class="text-xs text-slate-400">Contactez la régie commerciale de LOGOS TÉLÉVISION Likasi pour diffuser votre publicité ici.</p>
-                    </div>
-                `;
+            if (!ads || ads.length === 0) {
+                display.innerHTML = `<p class="text-xs text-slate-400 p-6 text-center">Aucune bannière publicitaire active pour le moment.</p>`;
                 dots.innerHTML = '';
                 return;
             }
 
             if (currentAdIndex >= ads.length) currentAdIndex = 0;
             const ad = ads[currentAdIndex];
-            const hasLink = ad.link && ad.link.trim() !== '';
 
             display.innerHTML = `
-                <div class="w-full relative group">
-                    <img src="${ad.image}" onerror="this.src='https://placehold.co/900x320/001E7A/F4CA00?text=PUBLICITE+LOGOS+TV'" alt="${ad.title}" class="w-full h-44 sm:h-52 object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent flex flex-col justify-end p-4 sm:p-5">
-                        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-                            <div class="space-y-1">
-                                <span class="inline-block bg-logos-yellow text-logos-blue text-[10px] font-black uppercase px-2 py-0.5 rounded">Sponsorisé</span>
-                                <h3 class="text-base sm:text-lg font-extrabold text-white leading-tight">${ad.title}</h3>
-                                <p class="text-xs text-slate-200 line-clamp-2">${ad.subtitle}</p>
-                            </div>
-                            ${hasLink ? `
-                                <a href="${ad.link}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue text-xs font-black uppercase tracking-wide flex items-center gap-1.5 self-start sm:self-end flex-shrink-0 shadow-lg transition">
-                                    <span>${ad.cta || 'Voir'}</span>
-                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                                </a>
-                            ` : ''}
+                <div class="relative w-full h-44 sm:h-52 overflow-hidden group">
+                    <img src="${escapeHtml(ad.image)}" alt="${escapeHtml(ad.title)}" onerror="this.src='https://placehold.co/900x320/001E7A/F4CA00?text=LOGOS+TV+PUBLICITE'" class="w-full h-full object-cover opacity-65 group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-r from-logos-blueDark/95 via-logos-blueDark/70 to-transparent p-4 sm:p-6 flex flex-col justify-center gap-2">
+                        <span class="w-fit bg-logos-yellow text-logos-blue text-[10px] font-black uppercase px-2.5 py-0.5 rounded">Sponsorisé</span>
+                        <h3 class="text-base sm:text-xl font-black text-white leading-tight max-w-lg">${escapeHtml(ad.title)}</h3>
+                        <p class="text-xs text-slate-200 line-clamp-2 max-w-md">${escapeHtml(ad.subtitle)}</p>
+                        <div class="pt-1">
+                            <a href="${escapeHtml(ad.link || '#')}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-logos-yellow hover:bg-logos-yellowHover text-logos-blue text-xs font-black shadow transition">
+                                ${escapeHtml(ad.cta || 'En savoir plus')} <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
             `;
 
             dots.innerHTML = ads.map((_, idx) => `
-                <button type="button" onclick="goToAdBanner(${idx})" class="h-2 rounded-full transition-all ${idx === currentAdIndex ? 'w-6 bg-logos-yellow' : 'w-2 bg-white/25 hover:bg-white/50'}"></button>
+                <button type="button" onclick="goToAdBanner(${idx})" class="h-2 rounded-full transition-all ${idx === currentAdIndex ? 'w-6 bg-logos-yellow' : 'w-2 bg-white/25'}"></button>
             `).join('');
         }
 
         function nextAdBanner() {
-            if (!appState.ads || appState.ads.length === 0) return;
+            if (!appState.ads.length) return;
             currentAdIndex = (currentAdIndex + 1) % appState.ads.length;
-            renderAdBanner();
+            renderAdBannerCarousel();
         }
 
         function prevAdBanner() {
-            if (!appState.ads || appState.ads.length === 0) return;
+            if (!appState.ads.length) return;
             currentAdIndex = (currentAdIndex - 1 + appState.ads.length) % appState.ads.length;
-            renderAdBanner();
+            renderAdBannerCarousel();
         }
 
-        function goToAdBanner(index) {
-            currentAdIndex = index;
-            renderAdBanner();
+        function goToAdBanner(idx) {
+            currentAdIndex = idx;
+            renderAdBannerCarousel();
         }
 
         function startAdAutoRotation() {
             if (adRotationTimer) clearInterval(adRotationTimer);
-            adRotationTimer = setInterval(() => {
-                if (currentActiveTab === 'live' && appState.ads && appState.ads.length > 1) {
-                    nextAdBanner();
-                }
-            }, 6000);
+            adRotationTimer = setInterval(nextAdBanner, 7000);
         }
 
-        // ==================== NAVIGATION ONGLETS ====================
-        function switchTab(tabName) {
-            currentActiveTab = tabName;
-            saveAdminSessionState();
-
-            document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
-            const targetView = document.getElementById(`view-${tabName}`);
-            if (targetView) targetView.classList.remove('hidden');
-
-            document.querySelectorAll('.desk-nav-btn').forEach(btn => {
-                btn.classList.remove('bg-logos-yellow', 'text-logos-blue', 'font-bold');
-                btn.classList.add('text-slate-300', 'font-semibold');
-            });
-            const activeDeskBtn = document.getElementById(`desk-nav-${tabName}`);
-            if (activeDeskBtn) {
-                activeDeskBtn.classList.add('bg-logos-yellow', 'text-logos-blue', 'font-bold');
-                activeDeskBtn.classList.remove('text-slate-300', 'font-semibold');
-            }
-
-            document.querySelectorAll('.mob-nav-btn').forEach(btn => {
-                btn.classList.remove('text-logos-yellow');
-                btn.classList.add('text-slate-400');
-            });
-            const activeMobBtn = document.getElementById(`mob-nav-${tabName}`);
-            if (activeMobBtn) {
-                activeMobBtn.classList.add('text-logos-yellow');
-                activeMobBtn.classList.remove('text-slate-400');
-            }
-
-            if (tabName === 'admin' && isAdminLoggedIn) {
-                renderAdminAdsList();
-                renderAdminVideosList();
-            }
-        }
-
-        // ==================== ACTUALITÉS & CHAPEAUX ====================
+        // ==================== ACTUALITÉS & VIDÉOS AVEC CHAPEAUX ====================
         function setNewsCategory(cat) {
             currentCategory = cat;
-            document.querySelectorAll('.cat-pill').forEach(pill => {
-                if (pill.textContent.trim() === cat) {
-                    pill.classList.add('bg-logos-yellow', 'text-logos-blue', 'font-bold');
-                    pill.classList.remove('bg-logos-cardBg', 'text-slate-300', 'border', 'border-white/10');
+            document.querySelectorAll('.cat-pill').forEach(btn => {
+                if (btn.textContent.trim() === cat) {
+                    btn.classList.add('bg-logos-yellow', 'text-logos-blue', 'font-bold');
+                    btn.classList.remove('bg-logos-cardBg', 'text-slate-300', 'font-semibold');
                 } else {
-                    pill.classList.remove('bg-logos-yellow', 'text-logos-blue', 'font-bold');
-                    pill.classList.add('bg-logos-cardBg', 'text-slate-300', 'border', 'border-white/10');
+                    btn.classList.remove('bg-logos-yellow', 'text-logos-blue', 'font-bold');
+                    btn.classList.add('bg-logos-cardBg', 'text-slate-300', 'font-semibold');
                 }
             });
             renderNewsList();
         }
 
         function renderNewsList() {
-            const container = document.getElementById('news-grid-container');
-            const query = (document.getElementById('news-search-input')?.value || '').toLowerCase().trim();
-
+            const search = (document.getElementById('news-search-input')?.value || '').toLowerCase().trim();
             const filtered = appState.videos.filter(v => {
                 const matchCat = currentCategory === 'Toutes' || v.category === currentCategory;
-                const matchQuery = v.title.toLowerCase().includes(query) || v.chapeau.toLowerCase().includes(query);
-                return matchCat && matchQuery;
+                const matchTxt = !search ||
+                    v.title.toLowerCase().includes(search) ||
+                    v.chapeau.toLowerCase().includes(search) ||
+                    v.category.toLowerCase().includes(search);
+                return matchCat && matchTxt;
             });
 
+            const grid = document.getElementById('news-grid-container');
+            const previewGrid = document.getElementById('live-preview-news-grid');
+
             if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full bg-logos-cardBg rounded-2xl p-8 text-center border border-white/10">
-                        <i class="fa-solid fa-video-slash text-3xl text-slate-500 mb-2"></i>
-                        <p class="text-sm font-bold text-slate-300">Aucune vidéo d'actualité trouvée.</p>
+                grid.innerHTML = `
+                    <div class="col-span-full bg-logos-cardBg p-8 rounded-2xl border border-white/10 text-center space-y-2">
+                        <i class="fa-solid fa-film text-3xl text-logos-yellow"></i>
+                        <p class="text-sm font-bold text-white">Aucune vidéo trouvée pour cette recherche.</p>
                     </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = filtered.map(video => {
-                const resolvedThumb = video.thumbnail || getAutoThumbnailFromUrl(video.url);
-                const isDirectMp4 = !resolvedThumb && video.url && !extractYouTubeId(video.url);
-
-                return `
-                <article class="bg-logos-cardBg rounded-2xl overflow-hidden border border-white/10 hover:border-logos-yellow/50 transition flex flex-col justify-between shadow-lg group">
-                    <div>
-                        <div onclick="openVideoDetailModal('${video.id}')" class="relative aspect-video bg-slate-900 overflow-hidden cursor-pointer">
-                            ${isDirectMp4 ? `
-                                <video src="${video.url}#t=1.5" muted playsinline preload="metadata" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 pointer-events-none"></video>
-                            ` : `
-                                <img src="${resolvedThumb || 'https://placehold.co/800x450/001E7A/F4CA00?text=LOGOS+TV'}" 
-                                     onerror="this.src='https://placehold.co/800x450/001E7A/F4CA00?text=LOGOS+TV'" 
-                                     alt="${video.title}" 
-                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            `}
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                            <span class="absolute top-3 left-3 bg-logos-yellow text-logos-blue text-[10px] font-black uppercase px-2.5 py-1 rounded-full shadow">
-                                ${video.category}
-                            </span>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="w-12 h-12 rounded-full bg-logos-yellow/95 text-logos-blue flex items-center justify-center text-lg shadow-xl group-hover:scale-110 transition">
-                                    <i class="fa-solid fa-play ml-0.5"></i>
-                                </div>
-                            </div>
-                            <span class="absolute bottom-2.5 right-3 text-[11px] text-slate-200 font-medium">
-                                <i class="fa-regular fa-clock mr-1"></i>${video.date}
-                            </span>
-                        </div>
-
-                        <div class="p-4 space-y-2.5">
-                            <h3 onclick="openVideoDetailModal('${video.id}')" class="text-base font-extrabold text-white group-hover:text-logos-yellow transition cursor-pointer leading-snug">
-                                ${video.title}
-                            </h3>
-                            <div class="bg-white/5 border-l-2 border-logos-yellow pl-3 py-1.5 rounded-r-lg">
-                                <p class="text-xs text-slate-300 leading-relaxed line-clamp-3">
-                                    ${video.chapeau}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="px-4 pb-4 pt-1 flex items-center justify-between gap-2">
-                        <button type="button" onclick="openVideoDetailModal('${video.id}')" class="text-xs font-extrabold text-logos-yellow hover:underline flex items-center gap-1.5">
-                            <i class="fa-solid fa-circle-play"></i> Regarder la vidéo
-                        </button>
-
-                        ${isAdminLoggedIn ? `
-                            <div class="flex items-center gap-1.5">
-                                <button type="button" onclick="openAdminVideoModal('${video.id}')" class="p-2 rounded-lg bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 text-xs" title="Modifier">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <button type="button" onclick="deleteAdminVideo('${video.id}')" class="p-2 rounded-lg bg-red-500/20 text-red-300 hover:bg-red-500/30 text-xs" title="Supprimer">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                        ` : ''}
-                    </div>
-                </article>
-            `;}).join('');
-        }
-
-        function renderLivePreviewNews() {
-            const container = document.getElementById('live-preview-news-grid');
-            const latest = appState.videos.slice(0, 2);
-            container.innerHTML = latest.map(video => {
-                const resolvedThumb = video.thumbnail || getAutoThumbnailFromUrl(video.url);
-                const isDirectMp4 = !resolvedThumb && video.url && !extractYouTubeId(video.url);
-
-                return `
-                <div onclick="openVideoDetailModal('${video.id}')" class="bg-logos-cardBg hover:bg-white/5 border border-white/10 rounded-2xl p-3 flex gap-3.5 cursor-pointer transition group">
-                    <div class="relative w-28 sm:w-32 aspect-video rounded-xl overflow-hidden flex-shrink-0 bg-slate-900">
-                        ${isDirectMp4 ? `
-                            <video src="${video.url}#t=1.5" muted playsinline preload="metadata" class="w-full h-full object-cover pointer-events-none"></video>
-                        ` : `
-                            <img src="${resolvedThumb || 'https://placehold.co/400x225/001E7A/F4CA00?text=LOGOS+TV'}" 
-                                 onerror="this.src='https://placehold.co/400x225/001E7A/F4CA00?text=LOGOS+TV'" 
-                                 class="w-full h-full object-cover">
-                        `}
-                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
-                            <i class="fa-solid fa-play text-logos-yellow text-sm"></i>
-                        </div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <span class="text-[10px] font-black uppercase text-logos-yellow">${video.category}</span>
-                        <h4 class="text-xs sm:text-sm font-bold text-white group-hover:text-logos-yellow transition line-clamp-2 mt-0.5">${video.title}</h4>
-                        <p class="text-[11px] text-slate-400 line-clamp-1 mt-1">${video.chapeau}</p>
-                    </div>
-                </div>
-            `;}).join('');
-        }
-
-        // ==================== MODALE DE VISIONNAGE VIDÉO ====================
-        function openVideoDetailModal(videoId) {
-            const video = appState.videos.find(v => v.id === videoId);
-            if (!video) return;
-
-            currentOpenedVideo = video;
-            document.getElementById('modal-video-category').textContent = video.category;
-            document.getElementById('modal-video-date').textContent = video.date;
-            document.getElementById('modal-video-title').textContent = video.title;
-            document.getElementById('modal-video-chapeau').textContent = video.chapeau;
-
-            const playerBox = document.getElementById('modal-video-player');
-            const ytId = extractYouTubeId(video.url);
-
-            if (ytId) {
-                playerBox.innerHTML = `
-                    <iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0" 
-                            frameborder="0" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen></iframe>
                 `;
             } else {
-                playerBox.innerHTML = `<video src="${video.url}" controls autoplay playsinline></video>`;
+                grid.innerHTML = filtered.map(v => buildVideoCardHTML(v)).join('');
+            }
+
+            if (previewGrid) {
+                previewGrid.innerHTML = appState.videos.slice(0, 2).map(v => buildVideoCardHTML(v)).join('');
+            }
+        }
+
+        function buildVideoCardHTML(v) {
+            const thumb = getAutoVideoThumbnail(v);
+            return `
+                <article onclick="openVideoDetailModal('${v.id}')" class="group bg-logos-cardBg rounded-2xl overflow-hidden border border-white/10 hover:border-logos-yellow/60 transition shadow-lg cursor-pointer flex flex-col">
+                    <div class="relative aspect-video bg-black overflow-hidden">
+                        <img src="${escapeHtml(thumb)}" alt="${escapeHtml(v.title)}" onerror="this.src='https://placehold.co/640x360/001E7A/F4CA00?text=LOGOS+TELEVISION'" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                        <span class="absolute top-3 left-3 bg-logos-yellow text-logos-blue text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow">
+                            ${escapeHtml(v.category)}
+                        </span>
+                        <span class="absolute top-3 right-3 bg-black/70 text-slate-200 text-[10px] font-semibold px-2.5 py-0.5 rounded-full">
+                            ${escapeHtml(v.date)}
+                        </span>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-12 h-12 rounded-full bg-logos-yellow/95 text-logos-blue flex items-center justify-center text-base shadow-xl group-hover:scale-110 transition">
+                                <i class="fa-solid fa-play ml-0.5"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col justify-between space-y-2.5">
+                        <div class="space-y-1.5">
+                            <h3 class="text-sm sm:text-base font-extrabold text-white group-hover:text-logos-yellow transition leading-snug line-clamp-2">
+                                ${escapeHtml(v.title)}
+                            </h3>
+                            <p class="text-xs text-slate-300 leading-relaxed line-clamp-3 border-l-2 border-logos-yellow/70 pl-2.5">
+                                ${escapeHtml(v.chapeau)}
+                            </p>
+                        </div>
+                        <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-bold text-logos-yellow">
+                            <span>Regarder le reportage</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+        function openVideoDetailModal(videoId) {
+            const vid = appState.videos.find(x => x.id === videoId);
+            if (!vid) return;
+            currentOpenedVideo = vid;
+
+            document.getElementById('modal-video-category').textContent = vid.category;
+            document.getElementById('modal-video-date').textContent = vid.date;
+            document.getElementById('modal-video-title').textContent = vid.title;
+            document.getElementById('modal-video-chapeau').textContent = vid.chapeau;
+
+            const player = document.getElementById('modal-video-player');
+            const ytId = extractYouTubeId(vid.url);
+            if (ytId) {
+                player.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            } else {
+                player.innerHTML = `<video src="${escapeHtml(vid.url)}" controls autoplay playsinline class="w-full h-full object-contain bg-black"></video>`;
             }
 
             document.getElementById('video-detail-modal').classList.remove('hidden');
         }
 
         function closeVideoDetailModal() {
-            document.getElementById('video-detail-modal').classList.add('hidden');
             document.getElementById('modal-video-player').innerHTML = '';
+            document.getElementById('video-detail-modal').classList.add('hidden');
             currentOpenedVideo = null;
         }
 
         function shareCurrentModalVideo() {
             if (!currentOpenedVideo) return;
-            shareContent(`${currentOpenedVideo.title} — Regardez sur LOGOS TÉLÉVISION Likasi`);
+            shareContent(`${currentOpenedVideo.title} — ${currentOpenedVideo.chapeau}`);
         }
 
-        // ==================== SYSTÈME ADMINISTRATEUR ====================
+        // ==================== AUTHENTIFICATION & RÉGIE ADMIN ====================
         function handleAdminAccess() {
             if (isAdminLoggedIn) {
                 switchTab('admin');
@@ -1813,16 +1776,17 @@
 
         function submitAdminLogin(e) {
             e.preventDefault();
-            const enteredPin = document.getElementById('admin-pin-input').value.trim();
-            if (enteredPin === appState.adminPin) {
+            const pin = document.getElementById('admin-pin-input').value.trim();
+            if (pin === appState.adminPin) {
                 isAdminLoggedIn = true;
-                saveAdminSessionState({ isAdminLoggedIn: true });
+                safeSetItem(SESSION_KEY, 'true');
                 closeAdminLoginModal();
                 updateAdminUIState();
+                renderAdminLists();
                 switchTab('admin');
-                showToast('Bienvenue dans la régie Administrateur');
+                showToast('Bienvenue dans la régie LOGOS TÉLÉVISION !');
             } else {
-                showToast('Code PIN incorrect. Veuillez réessayer.', true);
+                showToast('Code PIN incorrect.', true);
             }
         }
 
@@ -1831,427 +1795,401 @@
             safeRemoveItem(SESSION_KEY);
             updateAdminUIState();
             switchTab('live');
-            showToast('Vous êtes déconnecté du mode Administrateur');
+            showToast('Session Administrateur fermée.');
         }
 
         function updateAdminUIState() {
             const badge = document.getElementById('admin-active-badge');
-            const lockIcon = document.getElementById('admin-lock-icon');
-            const btnLabel = document.getElementById('admin-btn-label');
+            const label = document.getElementById('admin-btn-label');
             const mobLabel = document.getElementById('mob-admin-label');
-            const newsAddBtn = document.getElementById('news-admin-add-btn');
-            const liveAdBtn = document.getElementById('live-admin-ad-btn');
+            const lockIcon = document.getElementById('admin-lock-icon');
+            const addVideoBtn = document.getElementById('news-admin-add-btn');
+            const addAdBtn = document.getElementById('live-admin-ad-btn');
 
             if (isAdminLoggedIn) {
                 badge.classList.remove('hidden');
-                badge.classList.add('flex');
-                lockIcon.className = 'fa-solid fa-sliders text-logos-yellow';
-                btnLabel.textContent = 'Régie TV';
+                badge.classList.add('inline-flex');
+                label.textContent = 'Régie TV';
                 mobLabel.textContent = 'Régie';
-                newsAddBtn.classList.remove('hidden');
-                newsAddBtn.classList.add('flex');
-                liveAdBtn.classList.remove('hidden');
-                liveAdBtn.classList.add('flex');
+                lockIcon.className = 'fa-solid fa-unlock text-emerald-400';
+                addVideoBtn.classList.remove('hidden');
+                addVideoBtn.classList.add('inline-flex');
+                addAdBtn.classList.remove('hidden');
+                addAdBtn.classList.add('inline-flex');
             } else {
                 badge.classList.add('hidden');
-                badge.classList.remove('flex');
-                lockIcon.className = 'fa-solid fa-lock';
-                btnLabel.textContent = 'Espace Admin';
+                badge.classList.remove('inline-flex');
+                label.textContent = 'Espace Admin';
                 mobLabel.textContent = 'Admin';
-                newsAddBtn.classList.add('hidden');
-                newsAddBtn.classList.remove('flex');
-                liveAdBtn.classList.add('hidden');
-                liveAdBtn.classList.remove('flex');
+                lockIcon.className = 'fa-solid fa-lock text-logos-yellow';
+                addVideoBtn.classList.add('hidden');
+                addVideoBtn.classList.remove('inline-flex');
+                addAdBtn.classList.add('hidden');
+                addAdBtn.classList.remove('inline-flex');
             }
-            renderNewsList();
         }
 
-        function switchAdminSubTab(subName) {
-            currentAdminSubTab = subName;
-            saveAdminSessionState();
-
+        function switchAdminSubTab(subId) {
+            currentAdminSubTab = subId;
             document.querySelectorAll('.admin-sub-panel').forEach(p => p.classList.add('hidden'));
             document.querySelectorAll('.admin-sub-btn').forEach(b => {
                 b.classList.remove('bg-logos-yellow', 'text-logos-blue', 'font-bold');
                 b.classList.add('bg-logos-cardBg', 'text-slate-300', 'font-semibold');
             });
 
-            const activeBtn = document.getElementById(`subtab-btn-${subName}`);
+            const activeBtn = document.getElementById('subtab-btn-' + subId);
             if (activeBtn) {
                 activeBtn.classList.add('bg-logos-yellow', 'text-logos-blue', 'font-bold');
                 activeBtn.classList.remove('bg-logos-cardBg', 'text-slate-300', 'font-semibold');
             }
 
-            if (subName === 'stream') document.getElementById('admin-stream-form').classList.remove('hidden');
-            if (subName === 'ads') {
-                document.getElementById('admin-ads-panel').classList.remove('hidden');
-                renderAdminAdsList();
-            }
-            if (subName === 'videos') {
-                document.getElementById('admin-videos-panel').classList.remove('hidden');
-                renderAdminVideosList();
-            }
-            if (subName === 'socials') document.getElementById('admin-socials-form').classList.remove('hidden');
-            if (subName === 'security') document.getElementById('admin-security-form').classList.remove('hidden');
+            if (subId === 'stream') document.getElementById('admin-stream-form').classList.remove('hidden');
+            if (subId === 'ads') document.getElementById('admin-ads-panel').classList.remove('hidden');
+            if (subId === 'videos') document.getElementById('admin-videos-panel').classList.remove('hidden');
+            if (subId === 'socials') document.getElementById('admin-socials-form').classList.remove('hidden');
+            if (subId === 'security') document.getElementById('admin-security-form').classList.remove('hidden');
         }
 
-        // Gestion du Logo personnalisé
-        function handleLogoFileUpload(event) {
-            const file = event.target.files[0];
+        // ==================== UPLOADS & PARAMÈTRES DIRECT / LOGO ====================
+        function handleLogoFileUpload(e) {
+            const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('cfg-logo-url').value = e.target.result;
-                appState.settings.logoUrl = e.target.result;
-                persistAppState();
-                applySettingsToUI();
-                showToast('Nouveau logo chargé avec succès');
+            reader.onload = ev => {
+                document.getElementById('cfg-logo-url').value = ev.target.result;
+                document.getElementById('admin-logo-preview').innerHTML = `<img src="${ev.target.result}" class="w-full h-auto max-h-14 object-contain">`;
             };
             reader.readAsDataURL(file);
         }
 
         function resetDefaultLogo() {
-            if (!isAdminLoggedIn) return;
             document.getElementById('cfg-logo-url').value = '';
-            appState.settings.logoUrl = '';
-            persistAppState();
-            applySettingsToUI();
-            showToast('Logo original LOGOS TÉLÉVISION restauré');
+            document.getElementById('admin-logo-preview').innerHTML = DEFAULT_LOGO_SVG;
         }
 
-        // Sauvegarde Direct TV & Logo
+        function handleLiveStreamFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const blobUrl = URL.createObjectURL(file);
+            document.getElementById('cfg-stream-url').value = blobUrl;
+            showToast(`Fichier sélectionné : ${file.name}`);
+        }
+
+        function handleFallbackVideoUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const blobUrl = URL.createObjectURL(file);
+            document.getElementById('cfg-fallback-url').value = blobUrl;
+            showToast(`Vidéo de secours prête : ${file.name}`);
+        }
+
         function saveStreamSettings(e) {
             e.preventDefault();
-            if (!isAdminLoggedIn) return;
-
-            const oldUrl = appState.settings.streamUrl;
             appState.settings.logoUrl = document.getElementById('cfg-logo-url').value.trim();
             appState.settings.channelName = document.getElementById('cfg-channel-name').value.trim();
             appState.settings.slogan = document.getElementById('cfg-slogan').value.trim();
             appState.settings.streamUrl = document.getElementById('cfg-stream-url').value.trim();
+            appState.settings.backupStreamUrl = document.getElementById('cfg-backup-stream-url').value.trim();
+            appState.settings.fallbackVideoUrl = document.getElementById('cfg-fallback-url').value.trim();
             appState.settings.programTitle = document.getElementById('cfg-program-title').value.trim();
             appState.settings.programDesc = document.getElementById('cfg-program-desc').value.trim();
             appState.settings.ticker = document.getElementById('cfg-ticker').value.trim();
 
             persistAppState();
-            applySettingsToUI();
-            if (oldUrl !== appState.settings.streamUrl) {
-                initLivePlayer(appState.settings.streamUrl);
-            }
-            showToast('Paramètres du Direct & Logo enregistrés');
+            applyChannelSettingsToUI();
+            isFallbackActive = false;
+            usingBackupStream = false;
+            initLivePlayer(appState.settings.streamUrl);
+            showToast('Paramètres du Direct TV et Logo mis à jour !');
         }
 
-        // CRUD Bannières Publicitaires
-        function renderAdminAdsList() {
-            const list = document.getElementById('admin-ads-list');
-            const ads = appState.ads || [];
-            if (ads.length === 0) {
-                list.innerHTML = `<p class="text-xs text-slate-400 bg-logos-cardBg p-4 rounded-xl border border-white/10">Aucune bannière publicitaire enregistrée.</p>`;
-                return;
-            }
-            list.innerHTML = ads.map(ad => `
-                <div class="bg-logos-cardBg p-3.5 rounded-2xl border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="flex items-start gap-3">
-                        <img src="${ad.image}" onerror="this.src='https://placehold.co/200x100/001E7A/F4CA00?text=PUB'" class="w-28 h-16 object-cover rounded-lg flex-shrink-0 border border-white/10">
-                        <div>
-                            <h4 class="text-sm font-bold text-white">${ad.title}</h4>
-                            <p class="text-xs text-slate-400 line-clamp-1 mt-0.5">${ad.subtitle}</p>
-                            <span class="text-[10px] text-logos-yellow font-semibold">${ad.link || 'Sans lien externe'}</span>
+        // ==================== GESTION ADMIN : VIDÉOS & CHAPEAUX ====================
+        function renderAdminLists() {
+            const adsList = document.getElementById('admin-ads-list');
+            adsList.innerHTML = appState.ads.map(ad => `
+                <div class="bg-logos-darkBg p-3.5 rounded-xl border border-white/10 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <img src="${escapeHtml(ad.image)}" class="w-16 h-11 object-cover rounded-lg flex-shrink-0 bg-black">
+                        <div class="min-w-0">
+                            <h4 class="text-xs sm:text-sm font-bold text-white truncate">${escapeHtml(ad.title)}</h4>
+                            <p class="text-[11px] text-slate-400 truncate">${escapeHtml(ad.subtitle)}</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
-                        <button type="button" onclick="openAdminAdModal('${ad.id}')" class="px-3 py-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 text-xs font-bold flex items-center gap-1.5">
-                            <i class="fa-solid fa-pen"></i> Modifier
-                        </button>
-                        <button type="button" onclick="deleteAdminAd('${ad.id}')" class="px-3 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs font-bold flex items-center gap-1.5">
-                            <i class="fa-solid fa-trash"></i> Supprimer
-                        </button>
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                        <button type="button" onclick="openAdminAdModal('${ad.id}')" class="p-2 rounded-lg bg-white/10 hover:bg-logos-yellow hover:text-logos-blue text-xs transition"><i class="fa-solid fa-pen"></i></button>
+                        <button type="button" onclick="deleteAdminAd('${ad.id}')" class="p-2 rounded-lg bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white text-xs transition"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
-            `).join('');
+            `).join('') || `<p class="text-xs text-slate-400">Aucune bannière publicitaire enregistrée.</p>`;
+
+            const vidsList = document.getElementById('admin-videos-list');
+            vidsList.innerHTML = appState.videos.map(v => `
+                <div class="bg-logos-darkBg p-3.5 rounded-xl border border-white/10 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <img src="${escapeHtml(getAutoVideoThumbnail(v))}" class="w-16 h-11 object-cover rounded-lg flex-shrink-0 bg-black">
+                        <div class="min-w-0">
+                            <span class="text-[10px] font-black uppercase text-logos-yellow">${escapeHtml(v.category)} • ${escapeHtml(v.date)}</span>
+                            <h4 class="text-xs sm:text-sm font-bold text-white truncate">${escapeHtml(v.title)}</h4>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                        <button type="button" onclick="openAdminVideoModal('${v.id}')" class="p-2 rounded-lg bg-white/10 hover:bg-logos-yellow hover:text-logos-blue text-xs transition"><i class="fa-solid fa-pen"></i></button>
+                        <button type="button" onclick="deleteAdminVideo('${v.id}')" class="p-2 rounded-lg bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white text-xs transition"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('') || `<p class="text-xs text-slate-400">Aucune vidéo publiée.</p>`;
         }
 
-        function openAdminAdModal(adId = null, skipDraftSave = false) {
-            if (!isAdminLoggedIn) return;
-            const modal = document.getElementById('admin-ad-form-modal');
-            const titleEl = document.getElementById('ad-form-modal-title');
+        function openAdminVideoModal(editId = '') {
+            document.getElementById('vid-edit-id').value = editId;
+            if (editId) {
+                const v = appState.videos.find(x => x.id === editId);
+                if (!v) return;
+                document.getElementById('video-form-modal-title').innerHTML = `<i class="fa-solid fa-pen"></i> Modifier la vidéo`;
+                document.getElementById('vid-title').value = v.title;
+                document.getElementById('vid-category').value = v.category;
+                document.getElementById('vid-date').value = v.date;
+                document.getElementById('vid-url').value = v.url;
+                document.getElementById('vid-thumb').value = v.thumbnail || '';
+                document.getElementById('vid-chapeau').value = v.chapeau;
+                updateThumbPreview(getAutoVideoThumbnail(v));
+            } else {
+                document.getElementById('video-form-modal-title').innerHTML = `<i class="fa-solid fa-video"></i> Ajouter une vidéo d'actualité`;
+                document.getElementById('vid-title').value = '';
+                document.getElementById('vid-category').value = 'Likasi Info';
+                document.getElementById('vid-date').value = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+                document.getElementById('vid-url').value = '';
+                document.getElementById('vid-thumb').value = '';
+                document.getElementById('vid-chapeau').value = '';
+                updateThumbPreview('https://placehold.co/320x180/001E7A/F4CA00?text=APERCU+VIDEO');
+            }
+            document.getElementById('admin-video-form-modal').classList.remove('hidden');
+        }
 
-            if (adId) {
-                const ad = appState.ads.find(a => a.id === adId);
+        function closeAdminVideoModal() {
+            document.getElementById('admin-video-form-modal').classList.add('hidden');
+        }
+
+        function handleVideoUrlInput(val) {
+            const ytId = extractYouTubeId(val);
+            if (ytId) {
+                const thumbUrl = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+                document.getElementById('vid-thumb').value = thumbUrl;
+                updateThumbPreview(thumbUrl);
+            }
+        }
+
+        function handleVideoFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const blobUrl = URL.createObjectURL(file);
+            document.getElementById('vid-url').value = blobUrl;
+
+            const tempVideo = document.createElement('video');
+            tempVideo.src = blobUrl;
+            tempVideo.muted = true;
+            tempVideo.currentTime = 1;
+            tempVideo.onloadeddata = () => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 480;
+                    canvas.height = 270;
+                    canvas.getContext('2d').drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    document.getElementById('vid-thumb').value = dataUrl;
+                    updateThumbPreview(dataUrl);
+                } catch (err) {}
+            };
+        }
+
+        function updateThumbPreview(src) {
+            const img = document.getElementById('vid-thumb-preview');
+            if (img && src) img.src = src;
+        }
+
+        function saveAdminVideo(e) {
+            e.preventDefault();
+            const editId = document.getElementById('vid-edit-id').value;
+            const payload = {
+                id: editId || 'vid-' + Date.now(),
+                title: document.getElementById('vid-title').value.trim(),
+                category: document.getElementById('vid-category').value,
+                date: document.getElementById('vid-date').value.trim(),
+                url: document.getElementById('vid-url').value.trim(),
+                thumbnail: document.getElementById('vid-thumb').value.trim(),
+                chapeau: document.getElementById('vid-chapeau').value.trim()
+            };
+
+            if (editId) {
+                const idx = appState.videos.findIndex(v => v.id === editId);
+                if (idx !== -1) appState.videos[idx] = payload;
+            } else {
+                appState.videos.unshift(payload);
+            }
+
+            persistAppState();
+            renderNewsList();
+            renderAdminLists();
+            closeAdminVideoModal();
+            showToast(editId ? 'Vidéo modifiée avec succès !' : 'Nouvelle vidéo publiée avec son chapeau !');
+        }
+
+        function deleteAdminVideo(id) {
+            appState.videos = appState.videos.filter(v => v.id !== id);
+            persistAppState();
+            renderNewsList();
+            renderAdminLists();
+            showToast('Vidéo supprimée du catalogue.');
+        }
+
+        // ==================== GESTION ADMIN : BANNIÈRES PUB ====================
+        function openAdminAdModal(editId = '') {
+            document.getElementById('ad-edit-id').value = editId;
+            if (editId) {
+                const ad = appState.ads.find(a => a.id === editId);
                 if (!ad) return;
-                titleEl.innerHTML = '<i class="fa-solid fa-pen"></i> Modifier la bannière publicitaire';
-                document.getElementById('ad-edit-id').value = ad.id;
+                document.getElementById('ad-form-modal-title').innerHTML = `<i class="fa-solid fa-pen"></i> Modifier la bannière pub`;
                 document.getElementById('ad-title').value = ad.title;
                 document.getElementById('ad-subtitle').value = ad.subtitle;
                 document.getElementById('ad-image').value = ad.image;
                 document.getElementById('ad-link').value = ad.link || '';
-                document.getElementById('ad-cta').value = ad.cta || "Découvrir l'offre";
+                document.getElementById('ad-cta').value = ad.cta || 'Découvrir';
             } else {
-                titleEl.innerHTML = '<i class="fa-solid fa-plus-circle"></i> Nouvelle bannière publicitaire';
-                document.getElementById('ad-edit-id').value = '';
+                document.getElementById('ad-form-modal-title').innerHTML = `<i class="fa-solid fa-rectangle-ad"></i> Ajouter une bannière publicitaire`;
                 document.getElementById('ad-title').value = '';
                 document.getElementById('ad-subtitle').value = '';
                 document.getElementById('ad-image').value = '';
                 document.getElementById('ad-link').value = '';
                 document.getElementById('ad-cta').value = "Découvrir l'offre";
             }
-            modal.classList.remove('hidden');
-            if (!skipDraftSave) saveAdminDrafts();
+            document.getElementById('admin-ad-form-modal').classList.remove('hidden');
         }
 
         function closeAdminAdModal() {
             document.getElementById('admin-ad-form-modal').classList.add('hidden');
-            saveAdminSessionState({ openModal: null, adDraft: null });
         }
 
-        function handleAdImageUpload(event) {
-            const file = event.target.files[0];
+        function handleAdImageUpload(e) {
+            const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('ad-image').value = e.target.result;
-                saveAdminDrafts();
+            reader.onload = ev => {
+                document.getElementById('ad-image').value = ev.target.result;
             };
             reader.readAsDataURL(file);
         }
 
         function saveAdminAd(e) {
             e.preventDefault();
-            if (!isAdminLoggedIn) return;
-
             const editId = document.getElementById('ad-edit-id').value;
-            const adData = {
+            const payload = {
                 id: editId || 'ad-' + Date.now(),
                 title: document.getElementById('ad-title').value.trim(),
                 subtitle: document.getElementById('ad-subtitle').value.trim(),
                 image: document.getElementById('ad-image').value.trim(),
-                link: document.getElementById('ad-link').value.trim(),
-                cta: document.getElementById('ad-cta').value.trim() || "Découvrir l'offre"
+                link: document.getElementById('ad-link').value.trim() || '#',
+                cta: document.getElementById('ad-cta').value.trim()
             };
 
-            if (!appState.ads) appState.ads = [];
             if (editId) {
                 const idx = appState.ads.findIndex(a => a.id === editId);
-                if (idx !== -1) appState.ads[idx] = adData;
-                showToast('Bannière publicitaire modifiée');
+                if (idx !== -1) appState.ads[idx] = payload;
             } else {
-                appState.ads.unshift(adData);
-                currentAdIndex = 0;
-                showToast('Nouvelle bannière publicitaire publiée');
+                appState.ads.unshift(payload);
             }
 
             persistAppState();
-            renderAdBanner();
-            renderAdminAdsList();
+            renderAdBannerCarousel();
+            renderAdminLists();
             closeAdminAdModal();
+            showToast('Bannière publicitaire enregistrée !');
         }
 
-        function deleteAdminAd(adId) {
-            if (!isAdminLoggedIn) return;
-            appState.ads = appState.ads.filter(a => a.id !== adId);
+        function deleteAdminAd(id) {
+            appState.ads = appState.ads.filter(a => a.id !== id);
             persistAppState();
-            renderAdBanner();
-            renderAdminAdsList();
-            showToast('Bannière publicitaire supprimée');
+            renderAdBannerCarousel();
+            renderAdminLists();
+            showToast('Bannière publicitaire supprimée.');
         }
 
-        // Sauvegarde Contacts & Réseaux Sociaux
-        function saveContactSettings(e) {
+        // ==================== CONTACTS, RÉSEAUX & SÉCURITÉ PIN ====================
+        function saveSocialsSettings(e) {
             e.preventDefault();
-            if (!isAdminLoggedIn) return;
-
             appState.settings.phone = document.getElementById('cfg-phone').value.trim();
             appState.settings.address = document.getElementById('cfg-address').value.trim();
-            appState.settings.socials.youtube = document.getElementById('cfg-youtube').value.trim();
-            appState.settings.socials.facebook = document.getElementById('cfg-facebook').value.trim();
-            appState.settings.socials.tiktok = document.getElementById('cfg-tiktok').value.trim();
-            appState.settings.socials.x = document.getElementById('cfg-x').value.trim();
-            appState.settings.socials.instagram = document.getElementById('cfg-instagram').value.trim();
-
-            persistAppState();
-            applySettingsToUI();
-            showToast('Coordonnées et réseaux sociaux mis à jour');
-        }
-
-        // CRUD Vidéos d'Actualité (Admin uniquement)
-        function renderAdminVideosList() {
-            const list = document.getElementById('admin-videos-list');
-            list.innerHTML = appState.videos.map(v => {
-                const resolvedThumb = v.thumbnail || getAutoThumbnailFromUrl(v.url);
-                return `
-                <div class="bg-logos-cardBg p-3.5 rounded-2xl border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="flex items-start gap-3">
-                        <img src="${resolvedThumb || 'https://placehold.co/200x120/001E7A/F4CA00?text=TV'}" onerror="this.src='https://placehold.co/200x120/001E7A/F4CA00?text=TV'" class="w-24 aspect-video object-cover rounded-lg flex-shrink-0">
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-[10px] font-black uppercase bg-logos-yellow text-logos-blue px-2 py-0.5 rounded">${v.category}</span>
-                                <span class="text-[11px] text-slate-400">${v.date}</span>
-                            </div>
-                            <h4 class="text-sm font-bold text-white mt-1">${v.title}</h4>
-                            <p class="text-xs text-slate-400 line-clamp-2 mt-0.5"><strong class="text-logos-yellow">Chapeau :</strong> ${v.chapeau}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
-                        <button type="button" onclick="openAdminVideoModal('${v.id}')" class="px-3 py-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 text-xs font-bold flex items-center gap-1.5">
-                            <i class="fa-solid fa-pen"></i> Modifier
-                        </button>
-                        <button type="button" onclick="deleteAdminVideo('${v.id}')" class="px-3 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs font-bold flex items-center gap-1.5">
-                            <i class="fa-solid fa-trash"></i> Supprimer
-                        </button>
-                    </div>
-                </div>
-            `;}).join('');
-        }
-
-        function openAdminVideoModal(videoId = null, skipDraftSave = false) {
-            if (!isAdminLoggedIn) return;
-            const modal = document.getElementById('admin-video-form-modal');
-            const titleEl = document.getElementById('video-form-modal-title');
-
-            if (videoId) {
-                const v = appState.videos.find(item => item.id === videoId);
-                if (!v) return;
-                titleEl.innerHTML = '<i class="fa-solid fa-pen"></i> Modifier la vidéo';
-                document.getElementById('vid-edit-id').value = v.id;
-                document.getElementById('vid-title').value = v.title;
-                document.getElementById('vid-category').value = v.category;
-                document.getElementById('vid-date').value = v.date;
-                document.getElementById('vid-url').value = v.url;
-                const autoThumb = v.thumbnail || getAutoThumbnailFromUrl(v.url);
-                document.getElementById('vid-thumb').value = autoThumb;
-                updateThumbPreview(autoThumb);
-                document.getElementById('vid-chapeau').value = v.chapeau;
-            } else {
-                titleEl.innerHTML = '<i class="fa-solid fa-plus-circle"></i> Publier une nouvelle vidéo';
-                document.getElementById('vid-edit-id').value = '';
-                document.getElementById('vid-title').value = '';
-                document.getElementById('vid-category').value = 'Likasi Info';
-                document.getElementById('vid-date').value = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
-                document.getElementById('vid-url').value = '';
-                document.getElementById('vid-thumb').value = '';
-                updateThumbPreview('');
-                document.getElementById('vid-chapeau').value = '';
-            }
-            modal.classList.remove('hidden');
-            if (!skipDraftSave) saveAdminDrafts();
-        }
-
-        function closeAdminVideoModal() {
-            document.getElementById('admin-video-form-modal').classList.add('hidden');
-            saveAdminSessionState({ openModal: null, videoDraft: null });
-        }
-
-        function saveAdminVideo(e) {
-            e.preventDefault();
-            if (!isAdminLoggedIn) return;
-
-            const editId = document.getElementById('vid-edit-id').value;
-            const videoUrl = document.getElementById('vid-url').value.trim();
-            const manualOrAutoThumb = document.getElementById('vid-thumb').value.trim() || getAutoThumbnailFromUrl(videoUrl);
-
-            const videoData = {
-                id: editId || 'vid-' + Date.now(),
-                title: document.getElementById('vid-title').value.trim(),
-                category: document.getElementById('vid-category').value,
-                date: document.getElementById('vid-date').value.trim(),
-                url: videoUrl,
-                thumbnail: manualOrAutoThumb,
-                chapeau: document.getElementById('vid-chapeau').value.trim()
+            appState.settings.socials = {
+                youtube: document.getElementById('cfg-youtube').value.trim(),
+                facebook: document.getElementById('cfg-facebook').value.trim(),
+                tiktok: document.getElementById('cfg-tiktok').value.trim(),
+                x: document.getElementById('cfg-x').value.trim(),
+                instagram: document.getElementById('cfg-instagram').value.trim()
             };
-
-            if (editId) {
-                const idx = appState.videos.findIndex(v => v.id === editId);
-                if (idx !== -1) appState.videos[idx] = videoData;
-                showToast('Vidéo et chapeau modifiés avec succès');
-            } else {
-                appState.videos.unshift(videoData);
-                showToast('Nouvelle vidéo d’actualité publiée');
-            }
-
             persistAppState();
-            renderNewsList();
-            renderLivePreviewNews();
-            renderAdminVideosList();
-            closeAdminVideoModal();
+            applyChannelSettingsToUI();
+            showToast('Coordonnées et réseaux sociaux mis à jour !');
         }
 
-        function deleteAdminVideo(videoId) {
-            if (!isAdminLoggedIn) return;
-            appState.videos = appState.videos.filter(v => v.id !== videoId);
-            persistAppState();
-            renderNewsList();
-            renderLivePreviewNews();
-            renderAdminVideosList();
-            showToast('Vidéo supprimée des actualités');
-        }
-
-        // Sécurité PIN & Réinitialisation
         function updateAdminPin(e) {
             e.preventDefault();
-            if (!isAdminLoggedIn) return;
             const newPin = document.getElementById('cfg-new-pin').value.trim();
             if (newPin.length < 4) return;
             appState.adminPin = newPin;
             persistAppState();
             document.getElementById('cfg-new-pin').value = '';
-            showToast('Nouveau Code PIN Administrateur enregistré');
+            showToast('Code PIN Administrateur modifié avec succès !');
         }
 
         function resetAllDefaults() {
-            if (!isAdminLoggedIn) return;
             appState = JSON.parse(JSON.stringify(DEFAULT_DATA));
             persistAppState();
-            applySettingsToUI();
+            applyChannelSettingsToUI();
             initLivePlayer(appState.settings.streamUrl);
-            renderAdBanner();
+            renderAdBannerCarousel();
             renderNewsList();
-            renderLivePreviewNews();
-            renderAdminAdsList();
-            renderAdminVideosList();
-            showToast('Application réinitialisée aux paramètres d’origine');
+            renderAdminLists();
+            showToast('Paramètres d’usine restaurés.');
         }
 
-        // ==================== UTILITAIRES (PARTAGE & TOAST) ====================
+        // ==================== UTILITAIRES : PARTAGE, TOAST, ÉCHAPPEMENT ====================
         function shareContent(text) {
-            const shareText = `${text} — ${window.location.href}`;
+            const shareText = `${text} — Regardez LOGOS TÉLÉVISION Likasi (Votre plaisir)`;
             if (navigator.share) {
-                navigator.share({
-                    title: 'LOGOS TÉLÉVISION — Votre plaisir',
-                    text: text,
-                    url: window.location.href
-                }).catch(() => {});
+                navigator.share({ title: 'LOGOS TÉLÉVISION', text: shareText, url: window.location.href }).catch(() => {});
             } else {
-                const tempInput = document.createElement('textarea');
-                tempInput.value = shareText;
-                document.body.appendChild(tempInput);
-                tempInput.select();
+                const ta = document.createElement('textarea');
+                ta.value = `${shareText} ${window.location.href}`;
+                document.body.appendChild(ta);
+                ta.select();
                 document.execCommand('copy');
-                document.body.removeChild(tempInput);
+                document.body.removeChild(ta);
                 showToast('Lien copié dans le presse-papiers !');
             }
         }
 
-        let toastTimeout = null;
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast-notification');
-            const msgEl = document.getElementById('toast-message');
-            const iconEl = document.getElementById('toast-icon');
-
-            msgEl.textContent = message;
-            iconEl.className = isError
-                ? 'fa-solid fa-triangle-exclamation text-red-400 text-base'
-                : 'fa-solid fa-circle-check text-logos-yellow text-base';
-
-            toast.classList.remove('hidden');
+        function showToast(msg, isError = false) {
+            const el = document.getElementById('toast-notification');
+            const icon = document.getElementById('toast-icon');
+            const txt = document.getElementById('toast-message');
+            txt.textContent = msg;
+            icon.className = isError ? 'fa-solid fa-circle-exclamation text-red-400 text-base' : 'fa-solid fa-circle-check text-logos-yellow text-base';
+            el.classList.remove('hidden');
             requestAnimationFrame(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
+                el.classList.remove('translate-y-2', 'opacity-0');
             });
+            setTimeout(() => {
+                el.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => el.classList.add('hidden'), 300);
+            }, 3200);
+        }
 
-            if (toastTimeout) clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toast.classList.add('translate-y-2', 'opacity-0');
-                setTimeout(() => toast.classList.add('hidden'), 300);
-            }, 3000);
+        function escapeHtml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
         }
     </script>
 </body>
