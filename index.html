@@ -1328,6 +1328,20 @@
             stallCounter = 0;
             if (streamWatchdogTimer) clearInterval(streamWatchdogTimer);
 
+            // Enregistre automatiquement la dernière image lisible pour reprise sans coupure brusque
+            videoEl.addEventListener('timeupdate', () => {
+                if (!videoEl.paused && videoEl.readyState >= 2) {
+                    lastPlaybackTime = videoEl.currentTime;
+                }
+            });
+
+            // Si le réseau faiblit ou repasse en ligne, on relance proprement sans perdre l'écran
+            window.addEventListener('offline', () => {
+                if (!isFallbackActive) {
+                    activateFallbackLoopPlayer(streamUrl);
+                }
+            });
+
             streamWatchdogTimer = setInterval(() => {
                 if (!videoEl || isFallbackActive) return;
 
@@ -1336,18 +1350,25 @@
                     return;
                 }
 
+                // Si la vidéo s'est mise en pause involontairement pendant le direct, tente de reprendre
+                if (videoEl.paused && !videoEl.ended && document.visibilityState === 'visible') {
+                    videoEl.play().catch(() => {});
+                }
+
                 if (!videoEl.paused) {
                     if (Math.abs(videoEl.currentTime - lastPlaybackTime) < 0.05) {
                         stallCounter++;
-                        if (stallCounter === 3 && hlsInstance) {
+                        if (stallCounter === 2 && hlsInstance) {
                             if (hlsInstance.levels && hlsInstance.levels.length > 1) {
-                                hlsInstance.nextLevel = 0;
+                                hlsInstance.autoLevelCapping = 0;
+                                hlsInstance.currentLevel = 0;
                             }
+                            try { hlsInstance.recoverMediaError(); } catch (e) {}
                             setTimeout(() => {
                                 if (hlsInstance) hlsInstance.startLoad();
                                 videoEl.play().catch(() => {});
-                            }, getAntiCongestionJitter(400, 2200));
-                        } else if (stallCounter >= 5) {
+                            }, getAntiCongestionJitter(400, 1800));
+                        } else if (stallCounter >= 7) {
                             stallCounter = 0;
                             const backupUrl = (appState.settings.backupStreamUrl || '').trim();
                             if (backupUrl && !usingBackupStream) {
@@ -1362,7 +1383,7 @@
                         lastPlaybackTime = videoEl.currentTime;
                     }
                 }
-            }, 2200);
+            }, 2500);
 
             videoEl.addEventListener('error', () => {
                 const backupUrl = (appState.settings.backupStreamUrl || '').trim();
@@ -1469,56 +1490,80 @@
                     activateFallbackLoopPlayer(streamUrl);
                 });
             } else if (lowerUrl.includes('.m3u8') && typeof Hls !== 'undefined' && Hls.isSupported()) {
+                const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                const isWeakNetwork = !navigator.onLine || (conn && (conn.saveData || ['slow-2g', '2g', '3g'].includes(conn.effectiveType)));
+                const targetBuffer = isWeakNetwork ? 45 : 35;
+
                 hlsInstance = new Hls({
                     enableWorker: true,
                     lowLatencyMode: false,
-                    maxBufferLength: 30,
-                    maxMaxBufferLength: 60,
-                    maxBufferHole: 1.0,
-                    liveSyncDurationCount: 4,
-                    liveMaxLatencyDurationCount: 10,
+                    maxBufferLength: targetBuffer,
+                    maxMaxBufferLength: 90,
+                    backBufferLength: 15,
+                    maxBufferHole: 1.5,
+                    nudgeOffset: 0.2,
+                    nudgeMaxRetry: 8,
+                    liveSyncDurationCount: isWeakNetwork ? 6 : 4,
+                    liveMaxLatencyDurationCount: 14,
                     capLevelToPlayerSize: true,
-                    startLevel: 0,
-                    abrEwmaDefaultEstimate: 800000,
-                    abrBandWidthFactor: 0.75,
-                    abrBandWidthUpFactor: 0.5,
-                    manifestLoadingMaxRetry: 5,
-                    manifestLoadingRetryDelay: getAntiCongestionJitter(1000, 3500),
-                    levelLoadingMaxRetry: 5,
-                    levelLoadingRetryDelay: getAntiCongestionJitter(1000, 3500),
-                    fragLoadingMaxRetry: 6,
-                    fragLoadingRetryDelay: getAntiCongestionJitter(800, 3000)
+                    startLevel: isWeakNetwork ? 0 : -1,
+                    abrEwmaDefaultEstimate: isWeakNetwork ? 350000 : 800000,
+                    abrBandWidthFactor: isWeakNetwork ? 0.65 : 0.75,
+                    abrBandWidthUpFactor: isWeakNetwork ? 0.35 : 0.5,
+                    manifestLoadingMaxRetry: 8,
+                    manifestLoadingRetryDelay: getAntiCongestionJitter(1000, 3000),
+                    manifestLoadingMaxRetryTimeout: 20000,
+                    levelLoadingMaxRetry: 8,
+                    levelLoadingRetryDelay: getAntiCongestionJitter(1000, 3000),
+                    levelLoadingMaxRetryTimeout: 20000,
+                    fragLoadingMaxRetry: 10,
+                    fragLoadingRetryDelay: getAntiCongestionJitter(800, 2500),
+                    fragLoadingMaxRetryTimeout: 25000
                 });
                 hlsInstance.loadSource(streamUrl);
                 hlsInstance.attachMedia(video);
                 hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-                    setTimeout(() => {
-                        if (hlsInstance) hlsInstance.currentLevel = -1;
-                    }, 3000);
+                    if (isWeakNetwork && hlsInstance && hlsInstance.levels && hlsInstance.levels.length > 1) {
+                        hlsInstance.autoLevelCapping = 1;
+                    } else {
+                        setTimeout(() => {
+                            if (hlsInstance) hlsInstance.currentLevel = -1;
+                        }, 2500);
+                    }
                     video.play().catch(() => {});
                 });
                 hlsInstance.on(Hls.Events.ERROR, (event, data) => {
-                    if (data.fatal) {
-                        if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-                            stallCounter++;
-                            if (stallCounter >= 3) {
-                                const backupUrl = (appState.settings.backupStreamUrl || '').trim();
-                                if (backupUrl && !usingBackupStream) {
-                                    usingBackupStream = true;
-                                    initLivePlayer(backupUrl);
-                                } else {
-                                    activateFallbackLoopPlayer(streamUrl);
-                                }
-                            } else {
-                                setTimeout(() => {
-                                    if (hlsInstance) hlsInstance.startLoad();
-                                }, getAntiCongestionJitter(800, 3000));
-                            }
-                        } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
-                            hlsInstance.recoverMediaError();
-                        } else {
-                            activateFallbackLoopPlayer(streamUrl);
+                    if (!data.fatal) {
+                        if (data.details === Hls.ErrorDetails.BUFFER_STALLED_ERROR || data.details === Hls.ErrorDetails.BUFFER_APPEND_ERROR) {
+                            try { hlsInstance.recoverMediaError(); } catch (e) {}
                         }
+                        return;
+                    }
+                    if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                        stallCounter++;
+                        if (hlsInstance && hlsInstance.levels && hlsInstance.levels.length > 1) {
+                            hlsInstance.autoLevelCapping = 0;
+                            hlsInstance.currentLevel = 0;
+                        }
+                        if (stallCounter >= 5) {
+                            const backupUrl = (appState.settings.backupStreamUrl || '').trim();
+                            if (backupUrl && !usingBackupStream) {
+                                usingBackupStream = true;
+                                initLivePlayer(backupUrl);
+                            } else {
+                                activateFallbackLoopPlayer(streamUrl);
+                            }
+                        } else {
+                            setTimeout(() => {
+                                if (hlsInstance) hlsInstance.startLoad();
+                                video.play().catch(() => {});
+                            }, getAntiCongestionJitter(900, 2600));
+                        }
+                    } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+                        hlsInstance.recoverMediaError();
+                        setTimeout(() => video.play().catch(() => {}), 300);
+                    } else {
+                        activateFallbackLoopPlayer(streamUrl);
                     }
                 });
             } else {
