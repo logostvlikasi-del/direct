@@ -101,7 +101,6 @@
             background: #000;
         }
 
-
         @keyframes pulseGlow {
             0%, 100% { box-shadow: 0 0 0 0 rgba(244, 202, 0, 0.35); }
             50% { box-shadow: 0 0 18px 2px rgba(244, 202, 0, 0.18); }
@@ -451,9 +450,9 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1.5">
-                        URL du Flux TV en Direct (YouTube Live, VLC / IPTV .m3u8, .ts, .m3u ou MP4)
+                        URL du Flux TV en Direct (Kick, YouTube Live, VLC / IPTV .m3u8, .ts, .m3u ou MP4)
                     </label>
-                    <input type="text" id="cfg-stream-url" required placeholder="Ex: https://www.youtube.com/watch?v=... ou flux .m3u8 / .ts" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none mb-2">
+                    <input type="text" id="cfg-stream-url" required placeholder="Ex: https://kick.com/votre-chaine, YouTube Live ou flux .m3u8" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none mb-2">
                     <div class="bg-logos-darkBg/70 border border-dashed border-white/20 rounded-xl p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <span class="text-[11px] font-semibold text-logos-yellow flex items-center gap-1.5">
                             <i class="fa-solid fa-file-video"></i> Ou diffuser un fichier local (MP4, WebM, playlist M3U) :
@@ -467,7 +466,7 @@
                     <label class="block text-xs font-bold text-blue-300 mb-1.5">
                         URL Serveur Miroir / Relais Haute Audience (Optionnel — bascule auto si +2000 spectateurs)
                     </label>
-                    <input type="text" id="cfg-backup-stream-url" placeholder="Lien HLS (.m3u8) ou YouTube Live de relais en cas de pic d'audience" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
+                    <input type="text" id="cfg-backup-stream-url" placeholder="Lien HLS (.m3u8), Kick ou YouTube Live de relais en cas de pic d'audience" class="w-full bg-logos-darkBg border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-logos-yellow focus:outline-none">
                 </div>
 
                 <!-- Vidéo de secours en boucle en cas de coupure du signal -->
@@ -798,8 +797,7 @@
                     cta: 'En savoir plus'
                 }
             ],
-            videos: [
-            ]
+            videos: []
         };
 
         // ==================== CONFIGURATION SUPABASE (PROJET : Logos live) ====================
@@ -830,7 +828,6 @@
         let lastPlaybackTime = 0;
         let stallCounter = 0;
 
-        // Délai aléatoire (Jitter) pour éviter que 2000+ utilisateurs reconnectent au même instant
         function getAntiCongestionJitter(minMs = 1000, maxMs = 7500) {
             return Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
         }
@@ -897,11 +894,9 @@
                             initLivePlayer(appState.settings.streamUrl);
                         }
                     } else {
-                        // Initialise la ligne existante avec les données par défaut si elle est encore vide {}
                         await pushStateToSupabase();
                     }
                 } else {
-                    // Crée la ligne id: 2 automatiquement si elle n'existe pas encore
                     const insertObj = { id: SUPABASE_ROW_ID };
                     insertObj[supabaseColumnName] = appState;
                     const { error: insErr } = await supabaseClient.from('app_config').insert([insertObj]);
@@ -915,7 +910,6 @@
             }
         }
 
-        // Préserve l'intégralité des données enregistrées localement (localStorage) et les fusionne sans perte
         function preserveExistingState(incoming, existing) {
             const base = existing || JSON.parse(JSON.stringify(DEFAULT_DATA));
             if (!incoming || typeof incoming !== 'object') return base;
@@ -1084,7 +1078,6 @@
             }
         });
 
-
         // ==================== INITIALISATION AU CHARGEMENT ====================
         window.addEventListener('DOMContentLoaded', async () => {
             isAdminLoggedIn = safeGetItem(SESSION_KEY) === 'true';
@@ -1096,7 +1089,6 @@
             renderNewsList();
             renderAdminLists();
 
-            // Chargement et synchronisation en temps réel depuis Supabase
             await syncFromSupabase();
 
             if (supabaseClient) {
@@ -1216,7 +1208,6 @@
                 });
             });
 
-            // Pré-remplir les champs de la régie Admin
             document.getElementById('cfg-logo-url').value = s.logoUrl || '';
             document.getElementById('cfg-channel-name').value = s.channelName;
             document.getElementById('cfg-slogan').value = s.slogan;
@@ -1236,12 +1227,24 @@
             document.getElementById('cfg-instagram').value = soc.instagram;
         }
 
-        // ==================== EXTRACTION YOUTUBE & MINIATURES ====================
+        // ==================== EXTRACTION YOUTUBE, KICK & MINIATURES ====================
         function extractYouTubeId(url) {
             if (!url) return null;
             const regExp = /(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/|live\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
             const match = url.match(regExp);
             return match ? match[1] : null;
+        }
+
+        function extractKickChannel(url) {
+            if (!url) return null;
+            const regExp = /(?:kick\.com|player\.kick\.com)\/([a-zA-Z0-9_-]+)/i;
+            const match = url.match(regExp);
+            if (!match) return null;
+            const slug = match[1].toLowerCase();
+            if (['categories', 'following', 'browse', 'dashboard', 'transactions'].includes(slug)) {
+                return null;
+            }
+            return match[1];
         }
 
         function getAutoVideoThumbnail(video) {
@@ -1328,14 +1331,12 @@
             stallCounter = 0;
             if (streamWatchdogTimer) clearInterval(streamWatchdogTimer);
 
-            // Enregistre automatiquement la dernière image lisible pour reprise sans coupure brusque
             videoEl.addEventListener('timeupdate', () => {
                 if (!videoEl.paused && videoEl.readyState >= 2) {
                     lastPlaybackTime = videoEl.currentTime;
                 }
             });
 
-            // Si le réseau faiblit ou repasse en ligne, on relance proprement sans perdre l'écran
             window.addEventListener('offline', () => {
                 if (!isFallbackActive) {
                     activateFallbackLoopPlayer(streamUrl);
@@ -1350,7 +1351,6 @@
                     return;
                 }
 
-                // Si la vidéo s'est mise en pause involontairement pendant le direct, tente de reprendre
                 if (videoEl.paused && !videoEl.ended && document.visibilityState === 'visible') {
                     videoEl.play().catch(() => {});
                 }
@@ -1455,6 +1455,25 @@
                     </iframe>
                     <a href="https://www.youtube.com/watch?v=${ytId}" target="_blank" rel="noopener noreferrer" class="absolute top-3 right-3 z-20 bg-black/75 hover:bg-red-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-full border border-white/20 flex items-center gap-1.5 transition shadow">
                         <i class="fa-brands fa-youtube text-red-500"></i> Ouvrir sur YouTube
+                    </a>
+                `;
+                return;
+            }
+
+            // 1 bis. Flux Kick Live (kick.com/chaine ou player.kick.com/chaine)
+            const kickChannel = extractKickChannel(streamUrl);
+            if (kickChannel) {
+                container.innerHTML = `
+                    <iframe
+                        src="https://player.kick.com/${encodeURIComponent(kickChannel)}?autoplay=true&muted=true"
+                        title="LOGOS TÉLÉVISION En Direct (Kick)"
+                        frameborder="0"
+                        scrolling="no"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                        allowfullscreen>
+                    </iframe>
+                    <a href="https://kick.com/${encodeURIComponent(kickChannel)}" target="_blank" rel="noopener noreferrer" class="absolute top-3 right-3 z-20 bg-black/75 hover:bg-emerald-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-full border border-white/20 flex items-center gap-1.5 transition shadow">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Ouvrir sur Kick
                     </a>
                 `;
                 return;
@@ -1747,8 +1766,11 @@
 
             const player = document.getElementById('modal-video-player');
             const ytId = extractYouTubeId(vid.url);
+            const kickChannel = extractKickChannel(vid.url);
             if (ytId) {
                 player.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            } else if (kickChannel) {
+                player.innerHTML = `<iframe src="https://player.kick.com/${encodeURIComponent(kickChannel)}?autoplay=true" frameborder="0" scrolling="no" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
             } else {
                 player.innerHTML = `<video src="${escapeHtml(vid.url)}" controls autoplay playsinline class="w-full h-full object-contain bg-black"></video>`;
             }
