@@ -1491,6 +1491,15 @@
                 const isWeakNetwork = !navigator.onLine || (conn && (conn.saveData || ['slow-2g', '2g', '3g'].includes(conn.effectiveType)));
                 const targetBuffer = isWeakNetwork ? 45 : 35;
 
+                const startHlsPlayback = () => {
+                    if (!hlsInstance) return;
+                    try {
+                        hlsInstance.loadSource(streamUrl);
+                        hlsInstance.startLoad(-1);
+                    } catch (e) {}
+                    video.play().catch(() => {});
+                };
+
                 hlsInstance = new Hls({
                     enableWorker: true,
                     lowLatencyMode: false,
@@ -1507,18 +1516,26 @@
                     abrEwmaDefaultEstimate: isWeakNetwork ? 350000 : 800000,
                     abrBandWidthFactor: isWeakNetwork ? 0.65 : 0.75,
                     abrBandWidthUpFactor: isWeakNetwork ? 0.35 : 0.5,
-                    manifestLoadingMaxRetry: 8,
-                    manifestLoadingRetryDelay: getAntiCongestionJitter(1000, 3000),
+                    manifestLoadingMaxRetry: 12,
+                    manifestLoadingRetryDelay: 1200,
                     manifestLoadingMaxRetryTimeout: 20000,
-                    levelLoadingMaxRetry: 8,
-                    levelLoadingRetryDelay: getAntiCongestionJitter(1000, 3000),
+                    levelLoadingMaxRetry: 12,
+                    levelLoadingRetryDelay: 1200,
                     levelLoadingMaxRetryTimeout: 20000,
-                    fragLoadingMaxRetry: 10,
-                    fragLoadingRetryDelay: getAntiCongestionJitter(800, 2500),
+                    fragLoadingMaxRetry: 12,
+                    fragLoadingRetryDelay: 1000,
                     fragLoadingMaxRetryTimeout: 25000
                 });
-                hlsInstance.loadSource(streamUrl);
+
                 hlsInstance.attachMedia(video);
+                startHlsPlayback();
+
+                video.addEventListener('click', () => {
+                    if (video.paused) {
+                        startHlsPlayback();
+                    }
+                });
+
                 hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
                     if (isWeakNetwork && hlsInstance && hlsInstance.levels && hlsInstance.levels.length > 1) {
                         hlsInstance.autoLevelCapping = 1;
@@ -1529,6 +1546,7 @@
                     }
                     video.play().catch(() => {});
                 });
+
                 hlsInstance.on(Hls.Events.ERROR, (event, data) => {
                     if (!data.fatal) {
                         if (data.details === Hls.ErrorDetails.BUFFER_STALLED_ERROR || data.details === Hls.ErrorDetails.BUFFER_APPEND_ERROR) {
@@ -1552,9 +1570,8 @@
                             }
                         } else {
                             setTimeout(() => {
-                                if (hlsInstance) hlsInstance.startLoad();
-                                video.play().catch(() => {});
-                            }, getAntiCongestionJitter(900, 2600));
+                                startHlsPlayback();
+                            }, 1500);
                         }
                     } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
                         hlsInstance.recoverMediaError();
